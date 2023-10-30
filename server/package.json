@@ -2,10 +2,16 @@
   "name": "duck-checkers-server",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "dev": "bun run --hot index.ts"
+  },
   "devDependencies": {
     "bun-types": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "elysia": "^0.7.21"
   }
 }
