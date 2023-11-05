@@ -1,0 +1,33 @@
+services:
+  #############
+  ### MONGO ###
+  #############
+  mongo:
+    image: mongo:5.0.15
+    container_name: mongodb
+    tty: true
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DATABASE_NAME=duck-db
+    volumes:
+      - ./mongoSeed/init:/docker-entrypoint-initdb.d
+      - ./mongo/init/data:/tmp/data
+      - ./mongo/data:/data/db
+    ports:
+      - ${MONGO_PORT}:27017
+    networks:
+      - duck-net
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongo admin -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --quiet | grep 1
+      interval: 20s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
+###########
+### NET ###
+###########
+networks:
+  duck-net:
+    driver: "bridge"
