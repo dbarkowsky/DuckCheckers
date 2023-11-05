@@ -1,20 +1,14 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
-const {
-  MONGO_USERNAME,
-  MONGO_PASSWORD,
-  MONGO_PORT,
-  MONGO_SERVICE,
-  MONGO_DATABASE,
-  CONTAINERIZED,
-} = process.env;
+const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT, MONGO_SERVICE, MONGO_DATABASE, CONTAINERIZED } =
+  process.env;
 
 // Changing where to look for Mongo
-const MONGO_HOSTNAME = CONTAINERIZED ? MONGO_SERVICE : "localhost";
+const MONGO_HOSTNAME = CONTAINERIZED ? MONGO_SERVICE : 'localhost';
 
 // Create connection client
 const client: MongoClient = new MongoClient(
-  `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`
+  `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`,
 );
 
 // Attempt connection
