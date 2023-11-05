@@ -6,13 +6,15 @@
     "dev": "cp ../.env .env && bun run --hot index.ts"
   },
   "devDependencies": {
-    "bun-types": "latest"
+    "bun-types": "latest",
+    "eslint": "8.53.0",
+    "prettier": "3.0.3"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "5.0.0"
   },
   "dependencies": {
-    "elysia": "^0.7.21",
-    "mongodb": "^6.2.0"
+    "elysia": "0.7.21",
+    "mongodb": "6.2.0"
   }
 }
