@@ -1,12 +1,13 @@
 import { ServerWebSocket } from 'bun';
 import { Elysia } from 'elysia';
 import { ElysiaWS } from 'elysia/ws';
+import { getAllOngoing } from './controllers/ongoingGames';
 
 export const app = new Elysia();
 
 const connections: ElysiaWS<ServerWebSocket<any>>[] = [];
 
-app.get('/games', () => 'Hello Elysia');
+app.get('/ongoing', getAllOngoing);
 
 app.ws('/ws', {
   message(ws, message) {
