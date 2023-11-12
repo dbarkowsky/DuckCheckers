@@ -1,7 +1,12 @@
 version: "3.8"
 services:
-   oven:
+  #####################
+  ### Dev Container ###
+  #####################
+  oven:
     container_name: oven
+    profiles:
+      - tools
     build:
       context: .dev-container
     hostname: oven #optional
@@ -13,12 +18,15 @@ services:
       - 22222:22222
     restart: unless-stopped
     command: sleep infinity
+
   #############
   ### MONGO ###
   #############
   mongo:
     image: mongo:5.0.15
     container_name: mongodb
+    profiles:
+      - product
     tty: true
     restart: always
     environment:
