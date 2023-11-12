@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  oven:
+    container_name: oven
+    build:
+      context: .dev-container
+    hostname: oven #optional
+    volumes:
+      - ./:/home/vs-code/duck-checkers
+    networks:
+      - duck-net
+    ports:
+      - 22222:22222
+    restart: unless-stopped
+    command: sleep infinity
+
+networks:
+  duck-net:
+    driver: bridge
