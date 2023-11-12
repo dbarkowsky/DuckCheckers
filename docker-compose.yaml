@@ -1,10 +1,32 @@
+version: "3.8"
 services:
+  #####################
+  ### Dev Container ###
+  #####################
+  oven:
+    container_name: oven
+    profiles:
+      - tools
+    build:
+      context: .dev-container
+    hostname: oven #optional
+    volumes:
+      - ./:/home/vs-code/duck-checkers
+    networks:
+      - duck-net
+    ports:
+      - 22222:22222
+    restart: unless-stopped
+    command: sleep infinity
+
   #############
   ### MONGO ###
   #############
   mongo:
     image: mongo:5.0.15
     container_name: mongodb
+    profiles:
+      - product
     tty: true
     restart: always
     environment:
