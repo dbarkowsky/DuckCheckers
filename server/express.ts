@@ -8,10 +8,11 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import router from './routes';
 
 const app: express.Application = express();
 
-const { TESTING, BACKEND_URL, FRONTEND_URL } = Bun.env;
+const { TESTING, BACKEND_URL, FRONTEND_URL } = process.env;
 
 // Swagger Configuration
 const swaggerURL = `${BACKEND_URL}/api`;
@@ -72,7 +73,7 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIO
 
 
 // Other Routes
-app.get('/ongoing', getAllOngoing);
+app.use('/api', router.ongoingGamesRouter);
 
 // app.ws('/ws', {
 //   message(ws, message) {

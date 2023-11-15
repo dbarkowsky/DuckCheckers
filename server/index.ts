@@ -1,6 +1,6 @@
 import app from "./express";
 
-const { FRONTEND_URL, SERVER_PORT } = Bun.env;
+const { FRONTEND_URL, SERVER_PORT } = process.env;
 
 const port = +(SERVER_PORT ?? 9000);
 
