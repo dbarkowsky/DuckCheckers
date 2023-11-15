@@ -1,6 +1,6 @@
 import { ServerWebSocket } from 'bun';
 import { getAllOngoing } from './controllers/ongoingGames';
-import express, { RequestHandler,NextFunction, Response } from 'express';
+import express, { RequestHandler, NextFunction, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import morgan from 'morgan';
