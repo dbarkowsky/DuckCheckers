@@ -71,7 +71,6 @@ if (!TESTING) app.use(limiter);
 // Swagger service route
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
-
 // Other Routes
 app.use('/api', router.ongoingGamesRouter);
 

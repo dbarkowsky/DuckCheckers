@@ -1,8 +1,9 @@
 import { AxiosError } from 'axios';
 import db from '../db/conn';
 import { Request, Response } from 'express';
+import { IOngoingGame } from '../interfaces/IOngoingGame';
 
-const collection = db.collection('ongoingGames');
+const collection = db.collection<IOngoingGame>('ongoingGames');
 
 export const getAllOngoing = async (req: Request, res: Response) => {
   try {
@@ -15,3 +16,5 @@ export const getAllOngoing = async (req: Request, res: Response) => {
     return res.status(400).send(`Cannot retrieve ongoing games. Error: ${(e as AxiosError).message}`);
   }
 };
+
+
