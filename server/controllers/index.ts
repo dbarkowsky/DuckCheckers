@@ -1,6 +1,8 @@
-import { getAllOngoing } from "./ongoingGames";
+import { getAllOngoing, getOneOngoing, createNewOngoing } from "./ongoingGames";
 
 export const ongoingGamesController = {
-  getAllOngoing
+  getAllOngoing,
+  getOneOngoing,
+  createNewOngoing
 }
 
