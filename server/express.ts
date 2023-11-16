@@ -1,5 +1,3 @@
-import { ServerWebSocket } from 'bun';
-import { getAllOngoing } from './controllers/ongoingGames';
 import express, { RequestHandler, NextFunction, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
@@ -73,30 +71,5 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIO
 
 // Other Routes
 app.use('/api', router.ongoingGamesRouter);
-
-// app.ws('/ws', {
-//   message(ws, message) {
-//     console.log(`Message: ${ws.id}@${ws.remoteAddress} sends ${message}`);
-//     // Send message to all connections in the list.
-//     connections.forEach((conn) => {
-//       conn.send(message);
-//     });
-//   },
-//   open(ws) {
-//     console.log(`Connected: ${ws.id}@${ws.remoteAddress}`);
-//     ws.send('Hello');
-//     // Add the connection to the list
-//     connections.push(ws);
-//   },
-//   close(ws, code, message) {
-//     ws.send('Goodbye');
-//     console.log(`Disconnected: ${ws.id}@${ws.remoteAddress}`);
-//     // Remove the connection from the list
-//     connections.splice(
-//       connections.findIndex((conn) => conn.id === ws.id),
-//       1,
-//     );
-//   },
-// });
 
 export default app;
