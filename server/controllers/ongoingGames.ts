@@ -2,7 +2,7 @@ import { AxiosError } from 'axios';
 import db from '../db/conn';
 import { Request, Response } from 'express';
 import { IOngoingGame } from '../interfaces/IOngoingGame';
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId, WithId, InsertOneResult } from 'mongodb';
 
 const collection = db.collection<IOngoingGame>('ongoingGames');
 
@@ -30,5 +30,25 @@ export const getOneOngoing = async (req: Request, res: Response) => {
     return res.status(200).json(result);
   } catch (e: unknown) {
     return res.status(400).send(`Cannot retrieve ongoing game. Error: ${(e as AxiosError).message}`);
+  }
+}
+
+export const createNewOngoing = async (req: Request, res: Response) => {
+  const defaultGameObject: IOngoingGame = {
+    players: [],
+    moves: [],
+    observers: [],
+    created: new Date()
+  }
+
+  try {
+    const result: InsertOneResult<IOngoingGame> = await collection.insertOne(defaultGameObject);
+    // Did the insertion go bad?
+    if (!result.insertedId) {
+      return res.status(400).send('Game creation failed.')
+    }
+    return res.status(201).json(result);
+  } catch (e: unknown) {
+    return res.status(400).send(`Could not create game. Error: ${(e as AxiosError).message}`);
   }
 }
