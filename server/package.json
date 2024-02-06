@@ -7,13 +7,6 @@
     "lint": "eslint ./"
   },
   "devDependencies": {
-    "bun-types": "latest",
-    "eslint": "8.53.0",
-    "prettier": "3.0.3",
-    "eslint-config-airbnb": "19.0.4",
-    "eslint-config-airbnb-typescript": "17.0.0",
-    "eslint-config-prettier": "8.8.0",
-    "eslint-plugin-prettier": "4.2.1",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.16",
@@ -21,7 +14,15 @@
     "@types/morgan": "^1.9.9",
     "@types/swagger-jsdoc": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.6",
-    "@typescript-eslint/eslint-plugin": "6.9.1"
+    "@types/ws": "8.5.10",
+    "@typescript-eslint/eslint-plugin": "6.9.1",
+    "bun-types": "latest",
+    "eslint": "8.53.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-airbnb-typescript": "17.0.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "prettier": "3.0.3"
   },
   "peerDependencies": {
     "typescript": "5.0.0"
@@ -37,6 +38,7 @@
     "mongodb": "6.2.0",
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "ws": "8.16.0"
   }
 }
