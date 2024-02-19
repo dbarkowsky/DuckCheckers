@@ -1,5 +1,6 @@
 <script lang='ts'>
 	import Chip from "./Chip.svelte";
+	import Tile from "./Tile.svelte";
 
   const tiles = new Array(8).fill(new Array(8).fill(0));
 </script>
@@ -8,7 +9,7 @@
   {#each tiles as row, pindex}
     <div class="row">
       {#each row as tile, index}
-        <div class={(pindex + index) % 2 == 0 ? 'red' : 'black'}><Chip colour='orange'/></div>
+        <Tile isRed={(pindex + index) % 2 == 0} />
       {/each}
     </div>
   {/each}
@@ -23,18 +24,7 @@
 		min-width: 800px; 
 	}
 
-	.red {
-		background-color: rgb(255, 103, 103);
-	}
-
-	.black {
-		background-color: rgb(78, 78, 78);
-	}
-
-	.red,
-	.black {
-		display: inline-block;
-		width: 100px;
+	.row {
 		height: 100px;
 	}
 </style>
