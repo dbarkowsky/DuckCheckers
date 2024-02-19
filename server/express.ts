@@ -72,8 +72,4 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIO
 // Other Routes
 app.use('/api', router.ongoingGamesRouter);
 
-app.get('/',(req, res) => {
-  res.send('Upgrading to WS');
-})
-
 export default app;

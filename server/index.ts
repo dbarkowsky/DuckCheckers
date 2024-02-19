@@ -10,13 +10,14 @@ const port = +(SERVER_PORT ?? 9000);
 const wsServer = new ws.Server({noServer: true}); // Not a real server.
 wsServer.on('connection', socket => {
   socket.addEventListener('message', (e) => {
+    console.log(e)
     console.log(e.data.toString())
     // Single client return
     socket.send('Return message ' + e.data.toString())
     // Broadcast return
     wsServer.clients.forEach(client => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send('everyone, see this!');
+        client.send(e.data.toString());
       }
     })
   })
@@ -29,8 +30,9 @@ server.listen(port, () => {
   console.log(`Express is running at ${FRONTEND_URL ?? `localhost:${port}`}`);
 });
 // Handles upgrade from HTTP to WS. Emits a connection event
-server.on('upgrade', (request, socket, head) => {
-  wsServer.handleUpgrade(request, socket, head, socket => {
+server.on('upgrade', (request, duplex, head) => {
+  wsServer.handleUpgrade(request, duplex, head, socket => {
+    console.log(request.url)
     wsServer.emit('connection', socket, request);
   });
 });
