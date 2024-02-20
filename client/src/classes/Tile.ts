@@ -1,3 +1,5 @@
+import ChipClass from "./Chip";
+
 export default class TileClass {
 
   isRed: boolean;

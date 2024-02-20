@@ -1,7 +1,13 @@
 <script lang="ts">
-  export let isRed: boolean;
+	import type TileClass from '../classes/Tile';
+	import Chip from './Chip.svelte';
+  export let tile: TileClass;
 </script>
-<div class={isRed ? 'red' : 'black'}><slot/></div>
+<div class={tile.isRed ? 'red' : 'black'}>
+  {#if tile.chip}
+    <Chip colour={tile.chip.colour}/>
+  {/if}
+</div>
 
 <style>
 	.red {
@@ -14,7 +20,7 @@
 
 	.red,
 	.black {
-		display: inline-block;
+		display: table-cell;
 		width: 100px;
 		height: 100px;
 	}

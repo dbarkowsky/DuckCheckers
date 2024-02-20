@@ -1,13 +1,13 @@
 <script lang='ts'>
 	import Tile from "./Tile.svelte";
-	import game from "../stores/game";
+	import tileStore from "../stores/tileStore";
 </script>
 
 <div id="board">
-  {#each $game as row}
+  {#each $tileStore as row}
     <div class="row">
       {#each row as tile}
-        <Tile isRed={tile.isRed} />
+        <Tile tile={tile}/>
       {/each}
     </div>
   {/each}
