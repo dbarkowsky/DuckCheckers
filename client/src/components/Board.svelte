@@ -1,15 +1,13 @@
 <script lang='ts'>
-	import Chip from "./Chip.svelte";
 	import Tile from "./Tile.svelte";
-
-  const tiles = new Array(8).fill(new Array(8).fill(0));
+	import game from "../stores/game";
 </script>
 
 <div id="board">
-  {#each tiles as row, pindex}
+  {#each $game as row}
     <div class="row">
-      {#each row as tile, index}
-        <Tile isRed={(pindex + index) % 2 == 0} />
+      {#each row as tile}
+        <Tile isRed={tile.isRed} />
       {/each}
     </div>
   {/each}
