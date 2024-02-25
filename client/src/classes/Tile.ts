@@ -2,10 +2,10 @@ import ChipClass from "./Chip";
 
 export default class TileClass {
 
-  isRed: boolean;
-  x: number;
-  y: number;
-  chip: ChipClass | undefined = undefined;
+  public isRed: boolean;
+  public x: number;
+  public y: number;
+  public chip: ChipClass | undefined = undefined;
 
   constructor (isRed: boolean, x:number, y: number) {
     this.isRed = isRed;

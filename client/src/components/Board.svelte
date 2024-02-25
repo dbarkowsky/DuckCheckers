@@ -1,13 +1,17 @@
 <script lang='ts'>
 	import Tile from "./Tile.svelte";
 	import tileStore from "../stores/tileStore";
+
+	const tileClickHandler = () => {
+		console.log('hi')
+	}
 </script>
 
 <div id="board">
   {#each $tileStore as row}
     <div class="row">
       {#each row as tile}
-        <Tile tile={tile}/>
+        <Tile tile={tile} onClick={tileClickHandler}/>
       {/each}
     </div>
   {/each}
