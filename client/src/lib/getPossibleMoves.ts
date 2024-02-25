@@ -7,7 +7,7 @@ const getPossibleMoves = (tile: TileClass) => {
   return relativePositions.map(diff => {
     const [x, y] = diff;
     // If diagonal is occupied by opponent...
-    if (tileStore.hasOpponentChip(tile.x + x, tile.y + y, tile)){
+    if (tileStore.exists(tile.x + x, tile.y +y) && tileStore.hasOpponentChip(tile.x + x, tile.y + y, tile)){
       // Add the jump position
       return [tile.x + (x * 2), tile.y + (y * 2)];
     } else {

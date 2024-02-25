@@ -12,7 +12,15 @@ const createGame = () => {
   return {  
     subscribe,
     update: (replacement: Game) => set(replacement),
-    setSelectedTile: (tile: TileClass | undefined) => game.currentTile = tile,
+    setSelectedTile: (tile: TileClass | undefined) => {
+      game.currentTile = tile
+      if (tile){
+        tileStore.updateHighlighting(game.possibleMoves)
+      } else {
+        tileStore.clearHighlighting();
+      }
+      set(game);
+    },
     moveChip: (tile: TileClass) => {
       console.log(tile)
       // Get chip from existing tile
