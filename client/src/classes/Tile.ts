@@ -6,6 +6,7 @@ export default class TileClass {
   public x: number;
   public y: number;
   public chip: ChipClass | undefined = undefined;
+  public isHighlighted: boolean = false;
 
   constructor (isRed: boolean, x:number, y: number) {
     this.isRed = isRed;
@@ -14,4 +15,6 @@ export default class TileClass {
   }
 
   public hasChip = () => this.chip ? true : false;
+
+  
 }

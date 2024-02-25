@@ -7,7 +7,9 @@
 	export let tile: TileClass;
   export let onClick: () => void;
 
-  let highlighted = false;
+  $: highlighted = tile.isHighlighted;
+
+  const isPossibleMove = () => !!$gameStore.possibleMoves.find((coord: number[]) => coord[0] === tile.x && coord[1] === tile.y)
 
 	const clickHandler = () => {
     if (tile.hasChip()){
@@ -15,7 +17,7 @@
       // Decide which tiles can be moved to
       gameStore.setPossibleMoves(getPossibleMoves(tile));
     } else if ($gameStore.currentTile) {
-      if ($gameStore.possibleMoves.find((coord: number[]) => coord[0] === tile.x && coord[1] === tile.y)){
+      if (isPossibleMove()){
         gameStore.moveChip(tile);
       } else {
         gameStore.setSelectedTile(undefined);
@@ -30,11 +32,13 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class:highlighted class={tile.isRed ? 'red' : 'black'} on:click={clickHandler} on:mouseenter={() => {
   if (tile.chip){
-    highlighted = true;
+    tile.isHighlighted = true;
   }
 }}
   on:mouseleave={() => {
-    highlighted = false;
+    if(tile.chip && tile.isHighlighted){
+      tile.isHighlighted = false;
+    }
   }}>
 	{#if tile.chip}
 		<Chip colour={tile.chip.colour} />

@@ -2,6 +2,7 @@ import { writable } from "svelte/store";
 import TileClass from '../classes/Tile';
 import Game from "../classes/Game";
 import ChipClass from "../classes/Chip";
+import tileStore from "./tileStore";
 
 const createGame = () => {
   const game = new Game();
@@ -22,10 +23,16 @@ const createGame = () => {
       game.currentTile = undefined;
       // Put chip on next tile
       tile.chip = chip;
+      // Clear highlighting
+      tileStore.clearHighlighting();
       set(game);
     },
     setPossibleMoves: (moves: number[][]) => {
       game.possibleMoves = moves;
+      // Clear existing highlighting
+      tileStore.clearHighlighting();
+      // Set new highlighting
+      tileStore.updateHighlighting(moves);
       set(game);
     },
   };
