@@ -4,7 +4,8 @@ import ChipClass from "../classes/Chip";
 
 const createTiles = () => {
   // Making blank tiles
-  const blankArray = new Array(8).fill(new Array(8).fill(undefined));
+  const BOARD_SIZE = 8;
+  const blankArray = new Array(BOARD_SIZE).fill(new Array(BOARD_SIZE).fill(undefined));
   const tiles = blankArray.map((row: [], rowIndex: number) => row.map((slot, slotIndex) => new TileClass((rowIndex + slotIndex) % 2 === 0, rowIndex, slotIndex)));
 
   // Setting starting positions
@@ -28,6 +29,9 @@ const createTiles = () => {
     print: () => tiles.forEach(row => row.forEach(tile => console.log(tile))),
     subscribe,
     update: (replacement: TileClass[][]) => set(replacement),
+    hasChip: (x: number, y: number) => tiles[x][y].hasChip(),
+    hasOpponentChip: (x: number, y: number, movingTile: TileClass) => tiles[x][y].hasChip() && tiles[x][y].chip?.player !== movingTile.chip?.player,
+    exists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE
   };
 }
 

@@ -2,6 +2,7 @@
 	import type TileClass from '../classes/Tile';
 	import Chip from './Chip.svelte';
   import gameStore from '../stores/gameStore';
+  import getPossibleMoves from '$lib/getPossibleMoves'
 
 	export let tile: TileClass;
   export let onClick: () => void;
@@ -11,9 +12,14 @@
 	const clickHandler = () => {
     if (tile.hasChip()){
       gameStore.setSelectedTile(tile);
-      console.log($gameStore.currentTile)
+      // Decide which tiles can be moved to
+      gameStore.setPossibleMoves(getPossibleMoves(tile));
     } else if ($gameStore.currentTile) {
-      gameStore.moveChip(tile);
+      if ($gameStore.possibleMoves.find((coord: number[]) => coord[0] === tile.x && coord[1] === tile.y)){
+        gameStore.moveChip(tile);
+      } else {
+        gameStore.setSelectedTile(undefined);
+      }
     }
 
     onClick();
