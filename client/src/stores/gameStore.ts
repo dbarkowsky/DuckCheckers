@@ -27,12 +27,16 @@ const createGame = () => {
       const chip: ChipClass = game.currentTile?.chip!;
       // Remove from current tile
       game.currentTile!.chip = undefined;
+      // Store original tile
+      const originalTile = game.currentTile!;
       // Forget current tile
       game.currentTile = undefined;
       // Put chip on next tile
       tile.chip = chip;
       // Clear highlighting
       tileStore.clearHighlighting();
+      // If a piece was jumped, try to remove it
+      tileStore.removeJumpedChip(originalTile, tile)
       set(game);
     },
     setPossibleMoves: (moves: number[][]) => {

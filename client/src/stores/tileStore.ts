@@ -39,6 +39,15 @@ const createTiles = () => {
     clearHighlighting: () => {
       tiles.forEach(row => row.forEach((tile: TileClass) => tile.isHighlighted = false));
       set(tiles);
+    },
+    removeJumpedChip: (originalTile: TileClass, newTile: TileClass) => {
+      // Was a chip even jumped?
+      if (Math.abs(originalTile.x - newTile.x) <= 1){
+        return;
+      }
+      // Jump chip must have been of other player. Can just delete.
+      tiles[Math.max(originalTile.x, newTile.x) -1][Math.max(originalTile.y, newTile.y) - 1].chip = undefined;
+      set(tiles);
     }
   };
 }
