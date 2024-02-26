@@ -1,7 +1,6 @@
 import TileClass from "../classes/Tile";
 import tileStore from "../stores/tileStore";
 
-// TODO: Chips shouldn't be able to move backwards unless king'd
 const getPossibleMoves = (tile: TileClass) => {
   const relativePositions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
   return relativePositions.map(diff => {
@@ -18,7 +17,24 @@ const getPossibleMoves = (tile: TileClass) => {
   // filter out values outside board
   .filter(coord => tileStore.exists(coord[0], coord[1]))
   // filter out values with chips already
-  .filter(coord => !tileStore.hasChip(coord[0], coord[1]));
+  .filter(coord => !tileStore.hasChip(coord[0], coord[1]))
+  // filter out reverse moves if the chip isn't kinged
+  .filter(coord => {
+    if (!tile.chip?.isKinged){
+      // What is the difference for x coordinate?
+      const xDifference = coord[0] - tile.x;
+      // Player 1 chips can only move negative x
+      if (tile.chip?.player === 1 && xDifference < 0){
+        return true;
+      }
+      // Player 2 chips can only move positive x
+      else if (tile.chip?.player === 2 && xDifference > 0){
+        return true;
+      }
+      return false;
+    }
+    return true;
+  });
 }
 
 export default getPossibleMoves;

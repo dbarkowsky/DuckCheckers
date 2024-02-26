@@ -1,6 +1,7 @@
 export default class ChipClass {
   player: number;
   colour: string;
+  isKinged: boolean = false;
 
   constructor (player: number, colour: string) {
     this.player = player;

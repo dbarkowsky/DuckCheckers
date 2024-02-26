@@ -14,7 +14,7 @@ const createTiles = () => {
     [1,0],[1,2],[1,4],[1,6],
     [2,1],[2,3],[2,5],[2,7]
   ];
-  blackChipLocations.forEach(coord => tiles[coord[0]][coord[1]].chip = new ChipClass(0, '#262626'));
+  blackChipLocations.forEach(coord => tiles[coord[0]][coord[1]].chip = new ChipClass(2, '#262626'));
 
   const redChipLocations = [
     [5,0],[5,2],[5,4],[5,6],
