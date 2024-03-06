@@ -3,6 +3,7 @@
 </script>
 
 <div style="--colour:{colour};" class="chip">
+  <slot/>
 </div>
 
 <style>

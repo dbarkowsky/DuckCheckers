@@ -3,6 +3,7 @@
 	import Chip from './Chip.svelte';
   import gameStore from '../stores/gameStore';
   import getPossibleMoves from '$lib/getPossibleMoves'
+  import crownSVG from '../assets/crown.svg';
 
 	export let tile: TileClass;
   export let onClick: () => void;
@@ -41,7 +42,11 @@
     }
   }}>
 	{#if tile.chip}
-		<Chip colour={tile.chip.colour} />
+		<Chip colour={tile.chip.colour} >
+    {#if tile.chip.isKinged}
+      <img class="crown" src={crownSVG} alt="crown"/>
+    {/if}
+  </Chip>
 	{/if}
 </div>
 
@@ -63,5 +68,13 @@
 
   .highlighted {
     background-color: yellow;
+  }
+
+  .crown {
+    width: 80%;
+    position: absolute;
+    top: 10px;
+    left: 8px;
+    display: inline-block;
   }
 </style>

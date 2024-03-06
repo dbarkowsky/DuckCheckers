@@ -2,10 +2,21 @@ import { writable } from "svelte/store";
 import TileClass from '../classes/Tile';
 import Game from "../classes/Game";
 import ChipClass from "../classes/Chip";
-import tileStore from "./tileStore";
+import tileStore, { BOARD_SIZE } from "./tileStore";
 
 const createGame = () => {
   const game = new Game();
+
+  const kingChip = (landingTile: TileClass, chip: ChipClass) => {
+    // Player 1 has reached top row.
+    if (chip.player === 1 && landingTile.x === 0){
+      chip.isKinged = true;
+    }
+    // Player 2 has reached bottom row.
+    else if (chip.player === 2 && landingTile.x === BOARD_SIZE - 1){
+      chip.isKinged = true;
+    }
+  }
 
   // Setting up the store
   const { subscribe, set } = writable(game);
@@ -31,6 +42,8 @@ const createGame = () => {
       const originalTile = game.currentTile!;
       // Forget current tile
       game.currentTile = undefined;
+      // Should chip be kinged?
+      kingChip(tile, chip);
       // Put chip on next tile
       tile.chip = chip;
       // Clear highlighting

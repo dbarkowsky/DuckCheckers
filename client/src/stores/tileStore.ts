@@ -2,9 +2,10 @@ import { writable } from "svelte/store";
 import TileClass from '../classes/Tile';
 import ChipClass from "../classes/Chip";
 
+export const BOARD_SIZE = 8;
+
 const createTiles = () => {
   // Making blank tiles
-  const BOARD_SIZE = 8;
   const blankArray = new Array(BOARD_SIZE).fill(new Array(BOARD_SIZE).fill(undefined));
   const tiles = blankArray.map((row: [], rowIndex: number) => row.map((slot, slotIndex) => new TileClass((rowIndex + slotIndex) % 2 === 0, rowIndex, slotIndex)));
 
