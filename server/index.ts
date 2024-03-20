@@ -1,6 +1,7 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
+import { BaseMessage, CommunicationMessage, MessageType } from './interfaces/messages'
 
 const { FRONTEND_URL, SERVER_PORT } = process.env;
 
@@ -10,18 +11,32 @@ const port = +(SERVER_PORT ?? 9000);
 const wsServer = new ws.Server({noServer: true}); // Not a real server.
 wsServer.on('connection', socket => {
   socket.addEventListener('message', (e) => {
-    console.log(e)
-    console.log(e.data.toString())
+    // What to do with incomming message?
+    const message: BaseMessage = JSON.parse(e.data.toString());
+    switch (message.type) {
+      case MessageType.COMMUNICATION:
+        const data = message as CommunicationMessage;
+        sendToEveryone(JSON.stringify(data));
+        break;
+      case MessageType.GAME_STATE:
+        // 
+      default:
+        break;
+    }
     // Single client return
-    socket.send('Return message ' + e.data.toString())
-    // Broadcast return
-    wsServer.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(e.data.toString());
-      }
-    })
+    // socket.send('Return message ' + e.data.toString())
+    
   })
 })
+
+const sendToEveryone = (message: string) => {
+  // Broadcast return
+  wsServer.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
+  })
+}
 
 // Using to wrap express server
 const server = http.createServer(app);

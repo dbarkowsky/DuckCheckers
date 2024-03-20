@@ -1,65 +1,130 @@
-import { writable } from "svelte/store";
+import { get, writable } from "svelte/store";
 import TileClass from '../classes/Tile';
 import Game from "../classes/Game";
 import ChipClass from "../classes/Chip";
 import tileStore, { BOARD_SIZE } from "./tileStore";
 
-const createGame = () => {
-  const game = new Game();
+export enum GameState {
+  PLAYER_1_MOVE,
+  PLAYER_1_CONTINUE,
+  PLAYER_1_DUCK,
+  PLAYER_2_MOVE,
+  PLAYER_2_CONTINUE,
+  PLAYER_2_DUCK,
+  GAME_END,
+}
 
-  const kingChip = (landingTile: TileClass, chip: ChipClass) => {
+export interface IGame {
+  state: GameState,
+  players: {
+    1: string | undefined;
+    2: string | undefined;
+  },
+  tiles: ITile[][]
+}
+
+export interface ITile {
+  isRed: boolean;
+  x: number;
+  y: number;
+  chip: IChip | undefined;
+}
+
+export interface IChip {
+  player: 1 | 2;
+  colour: string;
+  isKinged: boolean;
+}
+
+const createGame = () => {
+  const kingChip = (landingTile: ITile, chip: IChip) => {
     // Player 1 has reached top row.
-    if (chip.player === 1 && landingTile.x === 0){
+    if (chip.player === 1 && landingTile.x === 0) {
       chip.isKinged = true;
     }
     // Player 2 has reached bottom row.
-    else if (chip.player === 2 && landingTile.x === BOARD_SIZE - 1){
+    else if (chip.player === 2 && landingTile.x === BOARD_SIZE - 1) {
       chip.isKinged = true;
     }
   }
 
+  const CHIP_RED = '#eb1e1e';
+  const CHIP_BLACK = '#262626';
+
+  // Setting starting positions
+  const blackChipLocations = [
+    [0, 1], [0, 3], [0, 5], [0, 7],
+    [1, 0], [1, 2], [1, 4], [1, 6],
+    [2, 1], [2, 3], [2, 5], [2, 7]
+  ];
+
+  const redChipLocations = [
+    [5, 0], [5, 2], [5, 4], [5, 6],
+    [6, 1], [6, 3], [6, 5], [6, 7],
+    [7, 0], [7, 2], [7, 4], [7, 6],
+  ];
+
+  const createChip = (x: number, y: number) => {
+    console.log(x, y)
+    const isRed = redChipLocations.some(coords => coords[0] === x && coords[1] === y);
+    const isBlack = blackChipLocations.some(coords => coords[0] === x && coords[1] === y);
+    if (!isRed && !isBlack) return undefined;
+    return {
+      player: isRed ? 1 : 2,
+      colour: isRed ? CHIP_RED : CHIP_BLACK,
+      isKinged: false,
+    } as IChip
+  }
+
+  const makeDefaultTiles = () => {
+    // Making blank tiles
+    const blankArray = new Array(BOARD_SIZE).fill(new Array(BOARD_SIZE).fill(undefined));
+    const tiles = blankArray.map((row: [], rowIndex: number) => row.map((slot, slotIndex) => ({
+      isRed: (rowIndex + slotIndex) % 2 === 0,
+      x: rowIndex,
+      y: slotIndex,
+      chip: createChip(rowIndex, slotIndex)
+    } as ITile)));
+
+    return tiles;
+  }
+
   // Setting up the store
-  const { subscribe, set } = writable(game);
-  return {  
+  const temporaryGameState = {
+    state: GameState.PLAYER_1_MOVE,
+    players: {
+      1: undefined,
+      2: undefined,
+    },
+    tiles: makeDefaultTiles(),
+  }
+  console.log(temporaryGameState)
+  const { subscribe, set } = writable<IGame>(temporaryGameState);
+  return {
     subscribe,
-    update: (replacement: Game) => set(replacement),
-    setSelectedTile: (tile: TileClass | undefined) => {
-      game.currentTile = tile
-      if (tile){
-        tileStore.updateHighlighting(game.possibleMoves)
-      } else {
-        tileStore.clearHighlighting();
-      }
-      set(game);
+    replace: (replacement: IGame) => set(replacement),
+    moveChip: (tile: ITile) => {
+      // console.log(tile)
+      // // Get chip from existing tile
+      // const chip: ChipClass = game.currentTile?.chip!;
+      // // Remove from current tile
+      // game.currentTile!.chip = undefined;
+      // // Store original tile
+      // const originalTile = game.currentTile!;
+      // // Forget current tile
+      // game.currentTile = undefined;
+      // // Should chip be kinged?
+      // kingChip(tile, chip);
+      // // Put chip on next tile
+      // tile.chip = chip;
+      // // Clear highlighting
+      // tileStore.clearHighlighting();
+      // // If a piece was jumped, try to remove it
+      // tileStore.removeJumpedChip(originalTile, tile)
+      // set(game);
     },
-    moveChip: (tile: TileClass) => {
-      console.log(tile)
-      // Get chip from existing tile
-      const chip: ChipClass = game.currentTile?.chip!;
-      // Remove from current tile
-      game.currentTile!.chip = undefined;
-      // Store original tile
-      const originalTile = game.currentTile!;
-      // Forget current tile
-      game.currentTile = undefined;
-      // Should chip be kinged?
-      kingChip(tile, chip);
-      // Put chip on next tile
-      tile.chip = chip;
-      // Clear highlighting
-      tileStore.clearHighlighting();
-      // If a piece was jumped, try to remove it
-      tileStore.removeJumpedChip(originalTile, tile)
-      set(game);
-    },
-    setPossibleMoves: (moves: number[][]) => {
-      game.possibleMoves = moves;
-      // Clear existing highlighting
-      tileStore.clearHighlighting();
-      // Set new highlighting
-      tileStore.updateHighlighting(moves);
-      set(game);
-    },
+    tileExists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE,
+    tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player,
   };
 }
 

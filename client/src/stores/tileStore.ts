@@ -33,14 +33,6 @@ const createTiles = () => {
     hasChip: (x: number, y: number) => tiles[x][y].hasChip(),
     hasOpponentChip: (x: number, y: number, movingTile: TileClass) => tiles[x][y].hasChip() && tiles[x][y].chip?.player !== movingTile.chip?.player,
     exists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE,
-    updateHighlighting: (moves: number[][]) => {
-      moves.forEach((move: number[]) => tiles.flat().find((tile: TileClass) => tile.x === move[0] && tile.y === move[1])!.isHighlighted = true)
-      set(tiles);
-    },
-    clearHighlighting: () => {
-      tiles.forEach(row => row.forEach((tile: TileClass) => tile.isHighlighted = false));
-      set(tiles);
-    },
     removeJumpedChip: (originalTile: TileClass, newTile: TileClass) => {
       // Was a chip even jumped?
       if (Math.abs(originalTile.x - newTile.x) <= 1){

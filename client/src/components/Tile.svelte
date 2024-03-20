@@ -1,31 +1,30 @@
 <script lang="ts">
-	import type TileClass from '../classes/Tile';
 	import Chip from './Chip.svelte';
-  import gameStore from '../stores/gameStore';
+  import localStore from '../stores/localStore';
   import getPossibleMoves from '$lib/getPossibleMoves'
   import crownSVG from '../assets/crown.svg';
+	import type { ITile } from '../stores/gameStore';
 
-	export let tile: TileClass;
-  export let onClick: () => void;
+	export let tile: ITile;
+  export let sendMove: (tile: ITile) => void;
 
-  $: highlighted = tile.isHighlighted;
+  $: highlighted = $localStore.possibleMoves.find((value) => value.x === tile.x && value.y === tile.y);
 
-  const isPossibleMove = () => !!$gameStore.possibleMoves.find((coord: number[]) => coord[0] === tile.x && coord[1] === tile.y)
+  const isPossibleMove = () => !!$localStore.possibleMoves.find((coord: {x: number, y: number}) => coord.x === tile.x && coord.y === tile.y)
 
 	const clickHandler = () => {
-    if (tile.hasChip()){
-      gameStore.setSelectedTile(tile);
+    if (tile.chip){
+      localStore.setSelectedTile(tile);
       // Decide which tiles can be moved to
-      gameStore.setPossibleMoves(getPossibleMoves(tile));
-    } else if ($gameStore.currentTile) {
+      localStore.setPossibleMoves(getPossibleMoves(tile));
+    } else if ($localStore.selectedTile) {
       if (isPossibleMove()){
-        gameStore.moveChip(tile);
+        // gameStore.moveChip(tile);
+        sendMove(tile);
       } else {
-        gameStore.setSelectedTile(undefined);
+        localStore.setSelectedTile(undefined);
       }
     }
-
-    onClick();
   };
 </script>
 
@@ -33,12 +32,15 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class:highlighted class={tile.isRed ? 'red' : 'black'} on:click={clickHandler} on:mouseenter={() => {
   if (tile.chip){
-    tile.isHighlighted = true;
+    $localStore.possibleMoves.push({
+      x: tile.x,
+      y: tile.y
+    })
   }
 }}
   on:mouseleave={() => {
-    if(tile.chip && tile.isHighlighted){
-      tile.isHighlighted = false;
+    if(tile.chip){
+      $localStore.possibleMoves.splice($localStore.possibleMoves.findIndex((value) => value.x === tile.x && value.y === tile.y),1)
     }
   }}>
 	{#if tile.chip}
