@@ -9,6 +9,7 @@ export interface ILocal {
     x: number;
     y: number;
   }[],
+  isHovered?: {x: number, y: number} | undefined;
   selectedTile?: ITile;
   playerName?: string;
   playerNumber?: number;
@@ -42,6 +43,12 @@ const createLocal = () => {
         return original;
       })
     },
+    setIsHovered: (coords: {x:number, y:number} | undefined) => {
+      update((original) => {
+        original.isHovered = coords;
+        return original;
+      })
+    }
   };
 }
 

@@ -8,7 +8,7 @@
 	export let tile: ITile;
   export let sendMove: (tile: ITile) => void;
 
-  $: highlighted = $localStore.possibleMoves.find((value) => value.x === tile.x && value.y === tile.y);
+  $: highlighted = $localStore.possibleMoves.find((value) => value.x === tile.x && value.y === tile.y) || $localStore.isHovered?.x === tile.x && $localStore.isHovered?.y === tile.y;;
 
   const isPossibleMove = () => !!$localStore.possibleMoves.find((coord: {x: number, y: number}) => coord.x === tile.x && coord.y === tile.y)
 
@@ -32,7 +32,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class:highlighted class={tile.isRed ? 'red' : 'black'} on:click={clickHandler} on:mouseenter={() => {
   if (tile.chip){
-    $localStore.possibleMoves.push({
+    localStore.setIsHovered({
       x: tile.x,
       y: tile.y
     })
@@ -40,7 +40,7 @@
 }}
   on:mouseleave={() => {
     if(tile.chip){
-      $localStore.possibleMoves.splice($localStore.possibleMoves.findIndex((value) => value.x === tile.x && value.y === tile.y),1)
+      localStore.setIsHovered(undefined);
     }
   }}>
 	{#if tile.chip}
