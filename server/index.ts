@@ -1,7 +1,7 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
-import { BaseMessage, BoardStateMessage, CommunicationMessage, MessageType, MoveRequestMessage } from './interfaces/messages'
+import { BaseMessage, BoardStateMessage, CommunicationMessage, MessageType, MoveRequestMessage } from './interfaces/messages.ts'
 import db from "./db/conn";
 import { Condition, ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
@@ -53,7 +53,7 @@ wsServer.on('connection', (socket, request) => {
           existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.isKinged = true;
         }
         // Player 2 has reached bottom row.
-        if (moveRequest.to.x === existingGame.tiles.length - 1 && existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.player === 1){
+        if (moveRequest.to.x === existingGame.tiles.length - 1 && existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.player === 2){
           existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.isKinged = true;
         }
 

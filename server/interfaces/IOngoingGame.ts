@@ -1,4 +1,4 @@
-import { ITile } from "./messages";
+import { ITile } from "./messages.ts";
 
 export interface IOngoingGame {
   players: string[];
