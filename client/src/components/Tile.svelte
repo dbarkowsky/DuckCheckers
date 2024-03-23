@@ -19,11 +19,9 @@
       localStore.setPossibleMoves(getPossibleMoves(tile));
     } else if ($localStore.selectedTile) {
       if (isPossibleMove()){
-        // gameStore.moveChip(tile);
         sendMove(tile);
-      } else {
-        localStore.setSelectedTile(undefined);
-      }
+      } 
+      localStore.setSelectedTile(undefined);
     }
   };
 </script>

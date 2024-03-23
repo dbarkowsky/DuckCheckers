@@ -1,7 +1,9 @@
+import { ITile } from "./messages";
+
 export interface IOngoingGame {
   players: string[];
   created: Date;
-  tiles: [];
+  tiles: ITile[][];
   observers: string[];
   state: GameState;
 }

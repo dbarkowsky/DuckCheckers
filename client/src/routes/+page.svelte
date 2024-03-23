@@ -2,10 +2,7 @@
 	import { onMount } from 'svelte';
 	import Board from '../components/Board.svelte';
   import gameStore, { type ITile } from '../stores/gameStore';
-	import Tile from '../components/Tile.svelte';
-	import type TileClass from '../classes/Tile';
-  import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage } from '$lib/interfaces';
-	import tileStore from '../stores/tileStore';
+  import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage, type MoveRequestMessage } from '$lib/interfaces';
 	import localStore from '../stores/localStore';
 
   let fieldValue = '';
@@ -20,20 +17,23 @@
       console.log("Connected")
     })
     socket.addEventListener('message', (e) => {
-      console.log(`Received: ${e.data.toString()}`);
-      console.log(JSON.parse(e.data));
-      const data = e.data as BaseMessage;
+      // console.log(JSON.parse(e.data));
+      const data = JSON.parse(e.data) as BaseMessage;
       // TODO: Check to make sure game ID matches before handling
       switch (data.type) {
         case MessageType.COMMUNICATION:
           break;
         case MessageType.GAME_STATE:
           const gameData = data as GameStateMessage;
-          gameStore.replace(gameData.state);
+          const updatedGame = {
+            ...$gameStore,
+            state: gameData.state,
+          }
+          gameStore.replace(updatedGame);
           break;
         case MessageType.BOARD_STATE:
           const boardData = data as BoardStateMessage;
-          tileStore.update(boardData.tiles);
+          gameStore.updateTiles(boardData.tiles);
           break;
         case MessageType.GAME_END:
           break;
@@ -48,12 +48,11 @@
   }
 
   const sendMove = (tile: ITile) => {
-    console.log(tile)
     socket.send(JSON.stringify({
-      fromTile: $localStore.selectedTile,
-      toTile: tile,
-    }))
-    gameStore.moveChip(tile);
+      type: MessageType.MOVE_REQUEST,
+      from: $localStore.selectedTile,
+      to: tile,
+    } as MoveRequestMessage))
   }
 
 </script>

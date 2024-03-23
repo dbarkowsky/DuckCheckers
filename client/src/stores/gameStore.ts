@@ -1,8 +1,4 @@
 import { get, writable } from "svelte/store";
-import TileClass from '../classes/Tile';
-import Game from "../classes/Game";
-import ChipClass from "../classes/Chip";
-import tileStore, { BOARD_SIZE } from "./tileStore";
 
 export enum GameState {
   PLAYER_1_MOVE,
@@ -36,18 +32,9 @@ export interface IChip {
   isKinged: boolean;
 }
 
-const createGame = () => {
-  const kingChip = (landingTile: ITile, chip: IChip) => {
-    // Player 1 has reached top row.
-    if (chip.player === 1 && landingTile.x === 0) {
-      chip.isKinged = true;
-    }
-    // Player 2 has reached bottom row.
-    else if (chip.player === 2 && landingTile.x === BOARD_SIZE - 1) {
-      chip.isKinged = true;
-    }
-  }
+export const BOARD_SIZE = 8;
 
+const createGame = () => {
   const CHIP_RED = '#eb1e1e';
   const CHIP_BLACK = '#262626';
 
@@ -65,7 +52,6 @@ const createGame = () => {
   ];
 
   const createChip = (x: number, y: number) => {
-    console.log(x, y)
     const isRed = redChipLocations.some(coords => coords[0] === x && coords[1] === y);
     const isBlack = blackChipLocations.some(coords => coords[0] === x && coords[1] === y);
     if (!isRed && !isBlack) return undefined;
@@ -98,35 +84,22 @@ const createGame = () => {
     },
     tiles: makeDefaultTiles(),
   }
-  console.log(temporaryGameState)
-  const { subscribe, set } = writable<IGame>(temporaryGameState);
+
+  const { subscribe, set, update } = writable<IGame>(temporaryGameState);
   return {
     subscribe,
     replace: (replacement: IGame) => set(replacement),
-    moveChip: (tile: ITile) => {
-      // console.log(tile)
-      // // Get chip from existing tile
-      // const chip: ChipClass = game.currentTile?.chip!;
-      // // Remove from current tile
-      // game.currentTile!.chip = undefined;
-      // // Store original tile
-      // const originalTile = game.currentTile!;
-      // // Forget current tile
-      // game.currentTile = undefined;
-      // // Should chip be kinged?
-      // kingChip(tile, chip);
-      // // Put chip on next tile
-      // tile.chip = chip;
-      // // Clear highlighting
-      // tileStore.clearHighlighting();
-      // // If a piece was jumped, try to remove it
-      // tileStore.removeJumpedChip(originalTile, tile)
-      // set(game);
-    },
     tileExists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE,
     tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player,
-  };
-}
+    tileHasChip: (x: number, y: number) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip !== null,
+    updateTiles: (newTiles: ITile[][]) =>
+      update((original) => {
+        original.tiles = newTiles;
+        return original;
+      })
+  }
+};
+
 
 const gameStore = createGame();
 export default gameStore;

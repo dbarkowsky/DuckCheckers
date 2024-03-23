@@ -1,7 +1,5 @@
-import TileClass from "../classes/Tile";
 import type { ITile } from "../stores/gameStore";
 import gameStore from "../stores/gameStore";
-import tileStore from "../stores/tileStore";
 
 const getPossibleMoves = (tile: ITile) => {
   const relativePositions = [{x: -1, y:-1}, {x: -1, y:1}, {x: 1, y:-1}, {x: 1, y: 1}];
@@ -17,9 +15,9 @@ const getPossibleMoves = (tile: ITile) => {
     }
   })
   // filter out values outside board
-  .filter(coord => tileStore.exists(coord.x, coord.y))
+  .filter(coord => gameStore.tileExists(coord.x, coord.y))
   // filter out values with chips already
-  .filter(coord => !tileStore.hasChip(coord.x, coord.y))
+  .filter(coord => !gameStore.tileHasChip(coord.x, coord.y))
   // filter out reverse moves if the chip isn't kinged
   .filter(coord => {
     if (!tile.chip?.isKinged){

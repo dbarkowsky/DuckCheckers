@@ -1,8 +1,5 @@
-import { writable, get } from "svelte/store";
-import TileClass from '../classes/Tile';
-import ChipClass from "../classes/Chip";
+import { writable } from "svelte/store";
 import type { ITile } from "./gameStore";
-import gameStore from "./gameStore";
 
 export interface ILocal {
   possibleMoves: {
