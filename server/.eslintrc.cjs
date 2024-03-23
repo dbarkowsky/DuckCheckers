@@ -43,6 +43,7 @@ module.exports = {
     'no-shadow': 'off',
     'no-use-before-define': 'off',
     'no-else-return': 'off',
+    'no-case-declarations': 'off'
   },
   ignorePatterns: ['node_modules/', 'tests/'],
 };

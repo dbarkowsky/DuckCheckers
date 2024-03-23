@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import db from '../db/conn';
 import { Request, Response } from 'express';
-import { IOngoingGame } from '../interfaces/IOngoingGame';
+import { GameState, IOngoingGame } from '../interfaces/IOngoingGame';
 import { ObjectId, WithId, InsertOneResult } from 'mongodb';
 
 const collection = db.collection<IOngoingGame>('ongoingGames');
@@ -36,9 +36,10 @@ export const getOneOngoing = async (req: Request, res: Response) => {
 export const createNewOngoing = async (req: Request, res: Response) => {
   const defaultGameObject: IOngoingGame = {
     players: [],
-    moves: [],
+    tiles: [],
     observers: [],
-    created: new Date()
+    created: new Date(),
+    state: GameState.PLAYER_1_MOVE,
   }
 
   try {

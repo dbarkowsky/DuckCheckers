@@ -1,17 +1,16 @@
 <script lang='ts'>
 	import Tile from "./Tile.svelte";
-	import tileStore from "../stores/tileStore";
+	import type { ITile } from "../stores/gameStore";
+	import gameStore from "../stores/gameStore";
+	export let sendMove: (tile: ITile) => void;
 
-	const tileClickHandler = () => {
-		console.log('hi')
-	}
 </script>
 
 <div id="board">
-  {#each $tileStore as row}
+  {#each $gameStore.tiles as row}
     <div class="row">
       {#each row as tile}
-        <Tile tile={tile} onClick={tileClickHandler}/>
+        <Tile tile={tile} sendMove={sendMove}/>
       {/each}
     </div>
   {/each}
