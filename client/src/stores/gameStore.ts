@@ -1,12 +1,10 @@
 import { get, writable } from "svelte/store";
+import { PlayerNumber } from "./localStore";
 
 export enum GameState {
-  PLAYER_1_MOVE,
-  PLAYER_1_CONTINUE,
-  PLAYER_1_DUCK,
-  PLAYER_2_MOVE,
-  PLAYER_2_CONTINUE,
-  PLAYER_2_DUCK,
+  PLAYER_MOVE,
+  PLAYER_CONTINUE,
+  PLAYER_DUCK,
   GAME_END,
 }
 
@@ -16,6 +14,7 @@ export interface IGame {
     1: string | undefined;
     2: string | undefined;
   },
+  playerTurn: PlayerNumber,
   tiles: ITile[][]
 }
 
@@ -27,7 +26,7 @@ export interface ITile {
 }
 
 export interface IChip {
-  player: 1 | 2;
+  player: PlayerNumber;
   colour: string;
   isKinged: boolean;
 }
@@ -56,7 +55,7 @@ const createGame = () => {
     const isBlack = blackChipLocations.some(coords => coords[0] === x && coords[1] === y);
     if (!isRed && !isBlack) return undefined;
     return {
-      player: isRed ? 1 : 2,
+      player: isRed ? PlayerNumber.ONE : PlayerNumber.TWO,
       colour: isRed ? CHIP_RED : CHIP_BLACK,
       isKinged: false,
     } as IChip
@@ -77,11 +76,12 @@ const createGame = () => {
 
   // Setting up the store
   const temporaryGameState = {
-    state: GameState.PLAYER_1_MOVE,
+    state: GameState.PLAYER_MOVE,
     players: {
       1: undefined,
       2: undefined,
     },
+    playerTurn: PlayerNumber.ONE,
     tiles: makeDefaultTiles(),
   }
 
@@ -93,10 +93,20 @@ const createGame = () => {
     tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player,
     tileHasChip: (x: number, y: number) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip !== null,
     updateTiles: (newTiles: ITile[][]) =>
-      update((original) => {
-        original.tiles = newTiles;
-        return original;
-      })
+      update((original) => ({
+        ...original,
+        tiles: newTiles,
+      })),
+    updateState: (newState: GameState) =>
+      update((original) => ({
+        ...original,
+        state: newState,
+      })),
+    updateTurn: (newTurn: PlayerNumber) =>
+      update((original) => ({
+        ...original,
+        playerTurn: newTurn,
+      })),
   }
 };
 

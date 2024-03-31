@@ -21,7 +21,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 0,
         "y": 1,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -36,7 +36,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 0,
         "y": 3,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -51,7 +51,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 0,
         "y": 5,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -66,7 +66,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 0,
         "y": 7,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -78,7 +78,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 1,
         "y": 0,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -93,7 +93,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 1,
         "y": 2,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -108,7 +108,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 1,
         "y": 4,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -123,7 +123,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 1,
         "y": 6,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -145,7 +145,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 2,
         "y": 1,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -160,7 +160,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 2,
         "y": 3,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -175,7 +175,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 2,
         "y": 5,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -190,7 +190,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 2,
         "y": 7,
         "chip": {
-          "player": 2,
+          "player": 1,
           "colour": "#262626",
           "isKinged": false
         }
@@ -286,7 +286,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 5,
         "y": 0,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -301,7 +301,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 5,
         "y": 2,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -316,7 +316,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 5,
         "y": 4,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -331,7 +331,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 5,
         "y": 6,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -353,7 +353,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 6,
         "y": 1,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -368,7 +368,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 6,
         "y": 3,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -383,7 +383,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 6,
         "y": 5,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -398,7 +398,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 6,
         "y": 7,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -410,7 +410,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 7,
         "y": 0,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -425,7 +425,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 7,
         "y": 2,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -440,7 +440,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 7,
         "y": 4,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -455,7 +455,7 @@ db.getCollection('ongoingGames').insertOne({
         "x": 7,
         "y": 6,
         "chip": {
-          "player": 1,
+          "player": 0,
           "colour": "#eb1e1e",
           "isKinged": false
         }

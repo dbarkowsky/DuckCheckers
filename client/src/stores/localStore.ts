@@ -1,15 +1,20 @@
 import { writable } from "svelte/store";
 import type { ITile } from "./gameStore";
 
+export enum PlayerNumber {
+  ONE,
+  TWO
+}
+
 export interface ILocal {
   possibleMoves: {
     x: number;
     y: number;
   }[],
-  isHovered?: {x: number, y: number} | undefined;
+  isHovered?: { x: number, y: number } | undefined;
   selectedTile?: ITile;
   playerName?: string;
-  playerNumber?: number;
+  playerNumber?: PlayerNumber;
 }
 
 const createDefaultLocal = () => ({
@@ -21,31 +26,36 @@ const createLocal = () => {
   const local = createDefaultLocal();
   const { subscribe, set, update } = writable<ILocal>(local);
 
-  return {  
+  return {
     subscribe,
     replace: (replacement: ILocal) => set(replacement),
     setSelectedTile: (tile: ITile | undefined) => {
       update((original) => {
         original.selectedTile = tile;
-        if (!tile){
+        if (!tile) {
           // Clear possible moves
           original.possibleMoves = [];
         }
         return original;
       })
     },
-    setPossibleMoves: (moves: {x: number, y: number}[]) => {
-      update((original) => {
-        original.possibleMoves = moves;
-        return original;
-      })
-    },
-    setIsHovered: (coords: {x:number, y:number} | undefined) => {
-      update((original) => {
-        original.isHovered = coords;
-        return original;
-      })
-    }
+    setPossibleMoves: (moves: { x: number, y: number }[]) =>
+      update((original) => ({
+        ...original,
+        possibleMoves: moves
+      })),
+    setIsHovered: (coords: { x: number, y: number } | undefined) =>
+      update((original) => ({
+        ...original,
+        isHovered: coords,
+      })),
+    setPlayer: (name: string, number: PlayerNumber) =>
+      update((original) => ({
+        ...original,
+        playerName: name,
+        playerNumber: number,
+      }))
+
   };
 }
 

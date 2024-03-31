@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Board from '../components/Board.svelte';
-  import gameStore, { type ITile } from '../stores/gameStore';
+  import gameStore, { GameState, type ITile } from '../stores/gameStore';
   import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage, type MoveRequestMessage } from '$lib/interfaces';
-	import localStore from '../stores/localStore';
+	import localStore, { PlayerNumber } from '../stores/localStore';
 
   let fieldValue = '';
   let socket: WebSocket;
@@ -60,6 +60,27 @@
 <div class="background">
   <input type="text" bind:value={fieldValue} />
   <button on:click={sendMessage}>Send</button>
+  <button on:click={() => {
+    gameStore.updateState(GameState.PLAYER_MOVE)
+  }}>PLAYER_MOVE</button>
+  <button on:click={() => {
+    gameStore.updateState(GameState.PLAYER_CONTINUE)
+  }}>PLAYER_CONTINUE</button>
+  <button on:click={() => {
+    gameStore.updateState(GameState.PLAYER_DUCK)
+  }}>PLAYER_DUCK</button>
+  <button on:click={() => {
+    gameStore.updateState(GameState.GAME_END)
+  }}>GAME_END</button>
+
+  <button on:click={() => {
+    localStore.setPlayer('one', PlayerNumber.ONE)
+    gameStore.updateTurn(PlayerNumber.ONE)
+  }}>PLAYER 1</button>
+  <button on:click={() => {
+    localStore.setPlayer('two', PlayerNumber.TWO)
+    gameStore.updateTurn(PlayerNumber.TWO)
+  }}>PLAYER 2</button>
 	<Board sendMove={sendMove}/>
 </div>
 
