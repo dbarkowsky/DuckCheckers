@@ -60,6 +60,7 @@
 <div class="background">
   <input type="text" bind:value={fieldValue} />
   <button on:click={sendMessage}>Send</button>
+  <br>
   <button on:click={() => {
     gameStore.updateState(GameState.PLAYER_MOVE)
   }}>PLAYER_MOVE</button>
@@ -72,7 +73,7 @@
   <button on:click={() => {
     gameStore.updateState(GameState.GAME_END)
   }}>GAME_END</button>
-
+  <br>
   <button on:click={() => {
     localStore.setPlayer('one', PlayerNumber.ONE)
     gameStore.updateTurn(PlayerNumber.ONE)
@@ -81,6 +82,9 @@
     localStore.setPlayer('two', PlayerNumber.TWO)
     gameStore.updateTurn(PlayerNumber.TWO)
   }}>PLAYER 2</button>
+  <button on:click={() => {
+    gameStore.clearDuck();
+  }}>CLEAR DUCK</button>
 	<Board sendMove={sendMove}/>
 </div>
 

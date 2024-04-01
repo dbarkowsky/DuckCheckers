@@ -3,7 +3,8 @@ import type { ITile } from "./gameStore";
 
 export enum PlayerNumber {
   ONE,
-  TWO
+  TWO,
+  DUCK,
 }
 
 export interface ILocal {

@@ -21,21 +21,33 @@
 
 	const clickHandler = () => {
 		if (isPlayersTurn()) {
-      // switch ($gameStore.state) {
-      //   case GameState.
-      // }
-			if (tile.chip && tile.chip.player === $localStore.playerNumber) {
-				localStore.setSelectedTile(tile);
-				// Decide which tiles can be moved to
-				localStore.setPossibleMoves(getPossibleMoves(tile));
-			} else if ($localStore.selectedTile) {
-				if (isPossibleMove()) {
-					sendMove(tile);
-				}
-				localStore.setSelectedTile(undefined);
+			switch ($gameStore.state) {
+				case GameState.PLAYER_MOVE:
+					if (tile.chip && tile.chip.player === $localStore.playerNumber) {
+						localStore.setSelectedTile(tile);
+						// Decide which tiles can be moved to
+						localStore.setPossibleMoves(getPossibleMoves(tile));
+					} else if ($localStore.selectedTile) {
+						if (isPossibleMove()) {
+							sendMove(tile);
+						}
+						localStore.setSelectedTile(undefined);
+					}
+					break;
+				case GameState.PLAYER_CONTINUE:
+					break;
+				case GameState.PLAYER_DUCK:
+          gameStore.setDuck(tile);
+					break;
+				case GameState.GAME_END:
+					break;
 			}
 		}
 	};
+
+  const shouldHighlightOnHover = () => {
+    return tile.chip && tile.chip.player === $localStore.playerNumber && $localStore.playerNumber === $gameStore.playerTurn && $gameStore.state === GameState.PLAYER_MOVE
+  }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -45,7 +57,7 @@
 	class={tile.isRed ? 'red' : 'black'}
 	on:click={clickHandler}
 	on:mouseenter={() => {
-		if (tile.chip && tile.chip.player === $localStore.playerNumber && isPlayersTurn()) {
+		if (shouldHighlightOnHover()) {
 			localStore.setIsHovered({
 				x: tile.x,
 				y: tile.y

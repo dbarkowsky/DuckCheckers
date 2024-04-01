@@ -36,6 +36,7 @@ export const BOARD_SIZE = 8;
 const createGame = () => {
   const CHIP_RED = '#eb1e1e';
   const CHIP_BLACK = '#262626';
+  const CHIP_YELLOW = '#f5ff13'
 
   // Setting starting positions
   const blackChipLocations = [
@@ -85,12 +86,18 @@ const createGame = () => {
     tiles: makeDefaultTiles(),
   }
 
+  const createDuck = () => ({
+    player: PlayerNumber.DUCK,
+    isKinged: false,
+    colour: CHIP_YELLOW,
+  } as IChip)
+
   const { subscribe, set, update } = writable<IGame>(temporaryGameState);
   return {
     subscribe,
     replace: (replacement: IGame) => set(replacement),
     tileExists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE,
-    tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player,
+    tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player && get(gameStore).tiles[x][y].chip?.player !== PlayerNumber.DUCK,
     tileHasChip: (x: number, y: number) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip !== null,
     updateTiles: (newTiles: ITile[][]) =>
       update((original) => ({
@@ -107,6 +114,42 @@ const createGame = () => {
         ...original,
         playerTurn: newTurn,
       })),
+    clearDuck: () =>
+      update((original) => {
+        const tiles = original.tiles;
+        const coords = {
+          x: -1,
+          y: -1,
+        };
+        tiles.forEach((row, xIndex) => {
+          row.forEach((tile, yIndex) => {
+            if (tile.chip?.player === PlayerNumber.DUCK) {
+              coords.x = xIndex;
+              coords.y = yIndex;
+            }
+          })
+        })
+        if (coords.x >= 0 && coords.y >= 0) {
+          tiles[coords.x][coords.y].chip = undefined;
+          return {
+            ...original,
+            tiles,
+          }
+        } else {
+          return original;
+        }
+      }),
+    setDuck: (tile: ITile) =>
+      update((original) => {
+        const tiles = original.tiles;
+        if (!tile.chip) {
+          tiles[tile.x][tile.y].chip = createDuck();
+        }
+        return {
+          ...original,
+          tiles,
+        }
+      })
   }
 };
 
