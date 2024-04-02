@@ -2,7 +2,7 @@ import type { ITile } from "../stores/gameStore";
 import gameStore from "../stores/gameStore";
 import { PlayerNumber } from "../stores/localStore";
 
-const getPossibleMoves = (tile: ITile) => {
+const getPossibleMoves = (tile: ITile, onlyJumps: boolean = false) => {
   const relativePositions = [{x: -1, y:-1}, {x: -1, y:1}, {x: 1, y:-1}, {x: 1, y: 1}];
   return relativePositions.map(diff => {
     const {x, y} = diff;
@@ -35,7 +35,9 @@ const getPossibleMoves = (tile: ITile) => {
       return false;
     }
     return true;
-  });
+  })
+  // filter out non-jumps (adjacent spaces)
+  .filter(coord => onlyJumps ? Math.abs(tile.x - coord.x) !== 1 : true);
 }
 
 export default getPossibleMoves;

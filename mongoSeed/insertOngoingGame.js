@@ -8,6 +8,7 @@ use('duck-db');
 db.getCollection('ongoingGames').insertOne({
   "_id": "123",
   "state": 0,
+  "playerTurn": 0,
   "players": {},
   "tiles": [
     [

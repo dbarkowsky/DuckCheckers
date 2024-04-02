@@ -2,8 +2,9 @@
 	import { onMount } from 'svelte';
 	import Board from '../components/Board.svelte';
   import gameStore, { GameState, type ITile } from '../stores/gameStore';
-  import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage, type MoveRequestMessage, type SelectedTileMessage } from '$lib/interfaces';
+  import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage, type MoveRequestMessage, type SelectedTileMessage } from '$lib/messages';
 	import localStore, { PlayerNumber } from '../stores/localStore';
+	import getPossibleMoves from '$lib/getPossibleMoves';
 
   let fieldValue = '';
   let socket: WebSocket;
@@ -37,7 +38,9 @@
           break;
         case MessageType.SELECTED_TILE:
           const selectedData = data as SelectedTileMessage;
+          gameStore.updateState(GameState.PLAYER_CONTINUE);
           localStore.setSelectedTile(selectedData.tile);
+          localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
         case MessageType.GAME_END:
           break;
         default:
@@ -50,9 +53,11 @@
     socket.send(fieldValue);
   }
 
+  // TODO: Send the game number back as well
   const sendMove = (tile: ITile) => {
     socket.send(JSON.stringify({
       type: MessageType.MOVE_REQUEST,
+      playerTurn: $gameStore.playerTurn,
       from: $localStore.selectedTile,
       to: tile,
     } as MoveRequestMessage))

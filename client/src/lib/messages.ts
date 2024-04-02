@@ -1,4 +1,5 @@
 import type { GameState, ITile } from "../stores/gameStore";
+import type { PlayerNumber } from "../stores/localStore";
 
 export enum MessageType {
  COMMUNICATION,
@@ -7,11 +8,13 @@ export enum MessageType {
  GAME_END, 
  MOVE_REQUEST,
  SELECTED_TILE,
+ DUCK_PLACEMENT,
 }
 
 export interface BaseMessage {
   type: MessageType;
   game: string;
+  playerTurn: PlayerNumber;
 }
 
 export interface CommunicationMessage extends BaseMessage {

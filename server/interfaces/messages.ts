@@ -1,11 +1,12 @@
+import { Condition, ObjectId } from "mongodb";
+
 export enum GameState {
-  PLAYER_1_MOVE,
-  PLAYER_1_CONTINUE,
-  PLAYER_1_DUCK,
-  PLAYER_2_MOVE,
-  PLAYER_2_CONTINUE,
-  PLAYER_2_DUCK,
+  PLAYER_MOVE,
+  PLAYER_CONTINUE,
+  PLAYER_DUCK,
   GAME_END,
+  MOVE_REQUEST,
+  SELECTED_TILE,
 }
 
 export interface IGame {
@@ -24,8 +25,14 @@ export interface ITile {
   chip: IChip | undefined;
 }
 
+export enum PlayerNumber {
+  ONE,
+  TWO,
+  DUCK,
+}
+
 export interface IChip {
-  player: 1 | 2;
+  player: PlayerNumber;
   colour: string;
   isKinged: boolean;
 }
@@ -36,11 +43,15 @@ export enum MessageType {
   BOARD_STATE,
   GAME_END, 
   MOVE_REQUEST,
+  SELECTED_TILE,
+  DUCK_PLACEMENT,
  }
  
  export interface BaseMessage {
-   type: MessageType;
- }
+  type: MessageType;
+  game: Condition<ObjectId> | undefined;
+  playerTurn: PlayerNumber;
+}
  
  export interface CommunicationMessage extends BaseMessage {
    type: MessageType.COMMUNICATION;
@@ -51,7 +62,8 @@ export enum MessageType {
  
  export interface GameStateMessage extends BaseMessage {
    type: MessageType.GAME_STATE;
-   state: IGame;
+   state: GameState;
+   playerTurn: PlayerNumber;
  }
  
  export interface BoardStateMessage extends BaseMessage {
@@ -69,4 +81,10 @@ export enum MessageType {
    from: ITile;
    to: ITile;
  }
+
+ export interface SelectedTileMessage extends BaseMessage {
+  type: MessageType.SELECTED_TILE;
+  tile: ITile;
+}
+
  
