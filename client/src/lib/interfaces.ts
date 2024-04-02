@@ -6,6 +6,7 @@ export enum MessageType {
  BOARD_STATE,
  GAME_END, 
  MOVE_REQUEST,
+ SELECTED_TILE,
 }
 
 export interface BaseMessage {
@@ -40,4 +41,9 @@ export interface MoveRequestMessage extends BaseMessage {
   type: MessageType.MOVE_REQUEST;
   from: ITile;
   to: ITile;
+}
+
+export interface SelectedTileMessage extends BaseMessage {
+  type: MessageType.SELECTED_TILE;
+  tile: ITile;
 }

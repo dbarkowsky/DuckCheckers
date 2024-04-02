@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import Board from '../components/Board.svelte';
   import gameStore, { GameState, type ITile } from '../stores/gameStore';
-  import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage, type MoveRequestMessage } from '$lib/interfaces';
+  import { MessageType, type BaseMessage, type GameStateMessage, type BoardStateMessage, type MoveRequestMessage, type SelectedTileMessage } from '$lib/interfaces';
 	import localStore, { PlayerNumber } from '../stores/localStore';
 
   let fieldValue = '';
@@ -35,6 +35,9 @@
           const boardData = data as BoardStateMessage;
           gameStore.updateTiles(boardData.tiles);
           break;
+        case MessageType.SELECTED_TILE:
+          const selectedData = data as SelectedTileMessage;
+          localStore.setSelectedTile(selectedData.tile);
         case MessageType.GAME_END:
           break;
         default:

@@ -35,9 +35,16 @@
 					}
 					break;
 				case GameState.PLAYER_CONTINUE:
+          // Selected tile here should be set by server
+					if ($localStore.selectedTile) {
+						if (isPossibleMove()) {
+							sendMove(tile);
+              localStore.setSelectedTile(undefined);
+						}
+					}
 					break;
 				case GameState.PLAYER_DUCK:
-          gameStore.setDuck(tile);
+					gameStore.setDuck(tile);
 					break;
 				case GameState.GAME_END:
 					break;
@@ -45,9 +52,14 @@
 		}
 	};
 
-  const shouldHighlightOnHover = () => {
-    return tile.chip && tile.chip.player === $localStore.playerNumber && $localStore.playerNumber === $gameStore.playerTurn && $gameStore.state === GameState.PLAYER_MOVE
-  }
+	const shouldHighlightOnHover = () => {
+		return (
+			tile.chip &&
+			tile.chip.player === $localStore.playerNumber &&
+			$localStore.playerNumber === $gameStore.playerTurn &&
+			$gameStore.state === GameState.PLAYER_MOVE
+		);
+	};
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
