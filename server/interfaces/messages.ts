@@ -50,7 +50,6 @@ export enum MessageType {
  export interface BaseMessage {
   type: MessageType;
   game: Condition<ObjectId> | undefined;
-  playerTurn: PlayerNumber;
 }
  
  export interface CommunicationMessage extends BaseMessage {
@@ -84,6 +83,11 @@ export enum MessageType {
 
  export interface SelectedTileMessage extends BaseMessage {
   type: MessageType.SELECTED_TILE;
+  tile: ITile;
+}
+
+export interface DuckMessage extends BaseMessage {
+  type: MessageType.DUCK_PLACEMENT;
   tile: ITile;
 }
 

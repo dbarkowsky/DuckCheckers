@@ -2,7 +2,7 @@
 	import Tile from "./Tile.svelte";
 	import type { ITile } from "../stores/gameStore";
 	import gameStore from "../stores/gameStore";
-	export let sendMove: (tile: ITile) => void;
+	export let socket: WebSocket;
 
 </script>
 
@@ -10,7 +10,7 @@
   {#each $gameStore.tiles as row}
     <div class="row">
       {#each row as tile}
-        <Tile tile={tile} sendMove={sendMove}/>
+        <Tile tile={tile} socket={socket}/>
       {/each}
     </div>
   {/each}

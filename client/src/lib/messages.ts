@@ -14,7 +14,6 @@ export enum MessageType {
 export interface BaseMessage {
   type: MessageType;
   game: string;
-  playerTurn: PlayerNumber;
 }
 
 export interface CommunicationMessage extends BaseMessage {
@@ -27,6 +26,7 @@ export interface CommunicationMessage extends BaseMessage {
 export interface GameStateMessage extends BaseMessage {
   type: MessageType.GAME_STATE;
   state: GameState;
+  playerTurn: PlayerNumber;
 }
 
 export interface BoardStateMessage extends BaseMessage {
@@ -48,5 +48,10 @@ export interface MoveRequestMessage extends BaseMessage {
 
 export interface SelectedTileMessage extends BaseMessage {
   type: MessageType.SELECTED_TILE;
+  tile: ITile;
+}
+
+export interface DuckMessage extends BaseMessage {
+  type: MessageType.DUCK_PLACEMENT;
   tile: ITile;
 }

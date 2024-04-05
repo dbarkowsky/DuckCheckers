@@ -1,7 +1,7 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
-import { BaseMessage, BoardStateMessage, CommunicationMessage, GameState, GameStateMessage, ITile, MessageType, MoveRequestMessage, PlayerNumber, SelectedTileMessage } from './interfaces/messages.ts'
+import { BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerNumber, SelectedTileMessage } from './interfaces/messages.ts'
 import db from "./db/conn";
 import { Condition, ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
@@ -57,6 +57,13 @@ const getPossibleJumps = (tile: ITile, tiles: ITile[][]) => {
     .filter(coord => Math.abs(tile.x - coord.x) !== 1);
 }
 
+const CHIP_YELLOW = '#f5ff13'
+const createDuck = () => ({
+  player: PlayerNumber.DUCK,
+  isKinged: false,
+  colour: CHIP_YELLOW,
+} as IChip)
+
 // Websocket Mock Server
 const wsServer = new ws.Server({ noServer: true }); // Not a real server.
 wsServer.on('connection', (socket, request) => {
@@ -73,6 +80,37 @@ wsServer.on('connection', (socket, request) => {
           sendToEveryone(JSON.stringify(data));
           break;
         case MessageType.DUCK_PLACEMENT:
+          // Get incoming message data
+          const duckData = message as DuckMessage;
+          // Can the duck be placed now?
+          if (existingGame.state !== GameState.PLAYER_DUCK) break;
+          // Is this valid duck placement?
+          if (existingGame.tiles[duckData.tile.x][duckData.tile.y].chip) break;
+          // Set requested tile with duck
+          existingGame.tiles[duckData.tile.x][duckData.tile.y].chip = createDuck();
+          // Update state and player turn
+          existingGame.state = GameState.PLAYER_MOVE;
+          existingGame.playerTurn = existingGame.playerTurn === PlayerNumber.ONE ? PlayerNumber.TWO : PlayerNumber.ONE
+          // Update database
+          await ongoingGames.updateOne({ _id: gameId }, {
+            $set: existingGame
+          })
+          // Send back responses
+          const duckResponse: BoardStateMessage = {
+            type: MessageType.BOARD_STATE,
+            tiles: existingGame.tiles,
+            game: gameId,
+          }
+          sendToEveryone(JSON.stringify(duckResponse));
+          // Return new game state
+          const gameState: GameStateMessage = {
+            type: MessageType.GAME_STATE,
+            state: existingGame.state,
+            playerTurn: existingGame.playerTurn,
+            game: gameId,
+          }
+          sendToEveryone(JSON.stringify(gameState));
+
           break;
         case MessageType.MOVE_REQUEST:
           const moveRequest = message as MoveRequestMessage;
@@ -102,18 +140,7 @@ wsServer.on('connection', (socket, request) => {
             existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.isKinged = true;
           }
 
-          // Update database
-          await ongoingGames.updateOne({ _id: gameId }, {
-            $set: existingGame
-          })
-          // Return new game state
-          const boardState: BoardStateMessage = {
-            type: MessageType.BOARD_STATE,
-            tiles: existingGame.tiles,
-            game: gameId,
-            playerTurn: moveRequest.playerTurn,
-          }
-          sendToEveryone(JSON.stringify(boardState));
+         
 
           // Should that chip continue?
           const tileThatMoved = existingGame.tiles[moveRequest.to.x][moveRequest.to.y];
@@ -124,29 +151,67 @@ wsServer.on('connection', (socket, request) => {
             await ongoingGames.updateOne({ _id: gameId }, {
               $set: existingGame
             })
+            // Send info for force-selected tile
             const selectedState: SelectedTileMessage = {
               type: MessageType.SELECTED_TILE,
               tile: tileThatMoved,
               game: gameId,
-              playerTurn: moveRequest.playerTurn,
             }
             socket.send(JSON.stringify(selectedState));
+            // Return new game state
+            const gameState: GameStateMessage = {
+              type: MessageType.GAME_STATE,
+              state: existingGame.state,
+              playerTurn: existingGame.playerTurn,
+              game: gameId,
+            }
+            sendToEveryone(JSON.stringify(gameState));
           } else {
-            // Update database
+            // Clear duck from board
+            const coords = {
+              x: -1,
+              y: -1,
+            };
+            let chipFound = false;
+            for (let xIndex = 0; xIndex < existingGame.tiles.length && !chipFound; xIndex += 1) {
+              const row = existingGame.tiles[xIndex];
+              for (let yIndex = 0; yIndex < row.length && !chipFound; yIndex += 1) {
+                const tile = row[yIndex];
+                if (tile.chip?.player === PlayerNumber.DUCK) {
+                  coords.x = xIndex;
+                  coords.y = yIndex;
+                  chipFound = true;
+                }
+              }
+            }
+            if (chipFound && coords.x >= 0 && coords.y >= 0) {
+              existingGame.tiles[coords.x][coords.y].chip = undefined;
+            }
+            // Update state and database
             existingGame.state = GameState.PLAYER_DUCK;
             await ongoingGames.updateOne({ _id: gameId }, {
               $set: existingGame
             })
-            // Update the state of the game
+            // Send updated the state of the game
             const nextState: GameStateMessage = {
               type: MessageType.GAME_STATE,
-              state: GameState.PLAYER_DUCK,
-              playerTurn: moveRequest.playerTurn,
+              state: existingGame.state,
+              playerTurn: existingGame.playerTurn,
               game: gameId,
             };
-
             sendToEveryone(JSON.stringify(nextState));
           }
+           // Update database
+           await ongoingGames.updateOne({ _id: gameId }, {
+            $set: existingGame
+          })
+          // Return new board state
+          const boardState: BoardStateMessage = {
+            type: MessageType.BOARD_STATE,
+            tiles: existingGame.tiles,
+            game: gameId,
+          }
+          sendToEveryone(JSON.stringify(boardState));
           break;
         default:
           break;

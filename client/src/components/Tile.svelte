@@ -6,9 +6,10 @@
 	import type { ITile } from '../stores/gameStore';
 	import { isPlayersTurn } from '$lib/isPlayersTurn';
 	import gameStore, { GameState } from '../stores/gameStore';
+	import { MessageType, type DuckMessage, type MoveRequestMessage } from '$lib/messages';
 
 	export let tile: ITile;
-	export let sendMove: (tile: ITile) => void;
+	export let socket: WebSocket;
 
 	$: highlighted =
 		$localStore.possibleMoves.find((value) => value.x === tile.x && value.y === tile.y) ||
@@ -18,6 +19,26 @@
 		!!$localStore.possibleMoves.find(
 			(coord: { x: number; y: number }) => coord.x === tile.x && coord.y === tile.y
 		);
+
+	// TODO: Send the game number back as well
+	const sendMove = (tile: ITile) => {
+		socket.send(
+			JSON.stringify({
+				type: MessageType.MOVE_REQUEST,
+				from: $localStore.selectedTile,
+				to: tile
+			} as MoveRequestMessage)
+		);
+	};
+
+	const sendDuckPlacement = (tile: ITile) => {
+		socket.send(
+			JSON.stringify({
+				type: MessageType.DUCK_PLACEMENT,
+				tile: tile,
+			} as DuckMessage)
+		);
+	};
 
 	const clickHandler = () => {
 		if (isPlayersTurn()) {
@@ -35,16 +56,19 @@
 					}
 					break;
 				case GameState.PLAYER_CONTINUE:
-          // Selected tile here should be set by server
+					// Selected tile here should be set by server
 					if ($localStore.selectedTile) {
 						if (isPossibleMove()) {
 							sendMove(tile);
-              localStore.setSelectedTile(undefined);
+							localStore.setSelectedTile(undefined);
 						}
 					}
 					break;
 				case GameState.PLAYER_DUCK:
-					gameStore.setDuck(tile);
+					// No chip is already here
+					if (!tile.chip){
+						sendDuckPlacement(tile);
+					}
 					break;
 				case GameState.GAME_END:
 					break;
