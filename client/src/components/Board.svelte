@@ -2,11 +2,13 @@
 	import Tile from "./Tile.svelte";
 	import type { ITile } from "../stores/gameStore";
 	import gameStore from "../stores/gameStore";
+	import localStore, { PlayerNumber } from "../stores/localStore";
 	export let socket: WebSocket;
 
+	$: rotate = $localStore.playerNumber === PlayerNumber.TWO;
 </script>
 
-<div id="board">
+<div id="board" class:rotate>
   {#each $gameStore.tiles as row}
     <div class="row">
       {#each row as tile}
@@ -23,9 +25,14 @@
 		margin: 2em auto;
     width: fit-content;
 		min-width: 800px; 
+		transition: 1s ease-in-out;
 	}
 
 	.row {
 		height: 100px;
+	}
+
+	.rotate {
+		transform: rotate(180deg);
 	}
 </style>

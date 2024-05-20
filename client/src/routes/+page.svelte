@@ -37,7 +37,6 @@
           gameStore.updateTurn(gameData.playerTurn);
 					break;
 				case MessageType.BOARD_STATE:
-          console.log('update board')
 					const boardData = data as BoardStateMessage;
 					gameStore.updateTiles(boardData.tiles);
 					break;
