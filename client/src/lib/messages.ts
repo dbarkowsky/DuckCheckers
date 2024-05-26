@@ -9,11 +9,33 @@ export enum MessageType {
  MOVE_REQUEST,
  SELECTED_TILE,
  DUCK_PLACEMENT,
+ ARRIVAL_ANNOUNCEMENT,
+ ARRIVAL_RESPONSE,
+}
+
+export enum PlayerRole {
+  PLAYER,
+  SPECTATOR
 }
 
 export interface BaseMessage {
   type: MessageType;
-  game: string;
+  gameId: string;
+}
+
+export interface ArrivalMessage extends BaseMessage {
+  type: MessageType.ARRIVAL_ANNOUNCEMENT;
+  player: string;
+  desiredRole: PlayerRole;
+}
+
+export interface ArrivalResponse extends BaseMessage {
+  type: MessageType.ARRIVAL_RESPONSE;
+  playerNumber?: PlayerNumber;
+  role: PlayerRole;
+  playerTurn: PlayerNumber;
+  state: GameState;
+  tiles: ITile[][];
 }
 
 export interface CommunicationMessage extends BaseMessage {

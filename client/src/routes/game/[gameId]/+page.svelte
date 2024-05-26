@@ -8,50 +8,69 @@
 		type GameStateMessage,
 		type BoardStateMessage,
 		type MoveRequestMessage,
-		type SelectedTileMessage
+		type SelectedTileMessage,
+		type ArrivalMessage,
+		PlayerRole,
+		type ArrivalResponse
 	} from '$lib/messages';
 	import localStore, { PlayerNumber } from '../../../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
-	
+
 	export let data;
 
 	let fieldValue = '';
 	let socket: WebSocket;
 
 	onMount(() => {
-		// fetch('http://localhost:22222/api/ongoing').then((response) => {
-		// 	console.log(response);
-		// });
 		socket = new WebSocket(`ws://localhost:22222/${data.gameId}`);
 		socket.addEventListener('open', () => {
 			console.log(`Connected to game ID: ${data.gameId}`);
-			// TODO: Request the current state of the board, game, etc.
+			// Announce arrival and request the current game state
+			socket.send(
+				JSON.stringify({
+					type: MessageType.ARRIVAL_ANNOUNCEMENT,
+					desiredRole: PlayerRole.PLAYER,
+					player: $localStore.playerName || 'joe'
+				} as ArrivalMessage)
+			);
 		});
 		socket.addEventListener('message', (e) => {
-			// console.log(JSON.parse(e.data));
-			const data = JSON.parse(e.data) as BaseMessage;
-			// TODO: Check to make sure game ID matches before handling
-			switch (data.type) {
-				case MessageType.COMMUNICATION:
-					break;
-				case MessageType.GAME_STATE:
-					const gameData = data as GameStateMessage;
-          gameStore.updateState(gameData.state);
-          gameStore.updateTurn(gameData.playerTurn);
-					break;
-				case MessageType.BOARD_STATE:
-					const boardData = data as BoardStateMessage;
-					gameStore.updateTiles(boardData.tiles);
-					break;
-				case MessageType.SELECTED_TILE:
-					const selectedData = data as SelectedTileMessage;
-					gameStore.updateState(GameState.PLAYER_CONTINUE);
-					localStore.setSelectedTile(selectedData.tile);
-					localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
-				case MessageType.GAME_END:
-					break;
-				default:
-					break;
+			const message = JSON.parse(e.data) as BaseMessage;
+			// Check to make sure game ID matches before handling
+			if (message.gameId === data.gameId) {
+				switch (message.type) {
+					case MessageType.COMMUNICATION:
+						break;
+					case MessageType.GAME_STATE:
+						const gameData = message as GameStateMessage;
+						gameStore.updateState(gameData.state);
+						gameStore.updateTurn(gameData.playerTurn);
+						break;
+					case MessageType.BOARD_STATE:
+						const boardData = message as BoardStateMessage;
+						gameStore.updateTiles(boardData.tiles);
+						break;
+					case MessageType.SELECTED_TILE:
+						const selectedData = message as SelectedTileMessage;
+						gameStore.updateState(GameState.PLAYER_CONTINUE);
+						localStore.setSelectedTile(selectedData.tile);
+						localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
+					case MessageType.ARRIVAL_RESPONSE:
+						const arrivalData = message as ArrivalResponse;
+						console.log(arrivalData)
+						gameStore.updateState(arrivalData.state);
+						gameStore.updateTurn(arrivalData.playerTurn);
+						gameStore.updateTiles(arrivalData.tiles);
+						localStore.setPlayerRole(arrivalData.role);
+						if (arrivalData.playerNumber !== undefined) localStore.setPlayerNumber(arrivalData.playerNumber);
+						break;
+					case MessageType.GAME_END:
+						break;
+					default:
+						break;
+				}
+			} else {
+				console.log(`Received unexpected game info from game ${message.gameId}.`);
 			}
 		});
 	});
@@ -89,19 +108,21 @@
 		<br />
 		<button
 			on:click={() => {
-				localStore.setPlayer('one', PlayerNumber.ONE);
+				localStore.setPlayerNumber(PlayerNumber.ONE);
+				localStore.setPlayerRole(PlayerRole.PLAYER);
 			}}>PLAYER 1</button
 		>
 		<button
 			on:click={() => {
-				localStore.setPlayer('two', PlayerNumber.TWO);
+				localStore.setPlayerNumber(PlayerNumber.TWO);
+				localStore.setPlayerRole(PlayerRole.PLAYER);
 			}}>PLAYER 2</button
 		>
 
-    <p class="text">Game state: {$gameStore.state}</p>
-    <p class="text">Player Turn: {$gameStore.playerTurn}</p>
-    <p class="text">You: {$localStore.playerNumber}</p>
-    <p class="text">Selected: {JSON.stringify($localStore.selectedTile)}</p>
+		<p class="text">Game state: {$gameStore.state}</p>
+		<p class="text">Player Turn: {$gameStore.playerTurn}</p>
+		<p class="text">You: {$localStore.playerNumber}</p>
+		<p class="text">Selected: {JSON.stringify($localStore.selectedTile)}</p>
 	</div>
 
 	<Board {socket} />
@@ -120,7 +141,7 @@
 		max-width: 300px;
 	}
 
-  .text {
-    color: white;
-  }
+	.text {
+		color: white;
+	}
 </style>

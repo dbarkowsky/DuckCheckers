@@ -1,7 +1,7 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
-import { BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerNumber, SelectedTileMessage } from './interfaces/messages.ts'
+import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerNumber, PlayerRole, SelectedTileMessage } from './interfaces/messages.ts'
 import db from "./db/conn";
 import { Condition, ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
@@ -99,7 +99,7 @@ wsServer.on('connection', (socket, request) => {
           const duckResponse: BoardStateMessage = {
             type: MessageType.BOARD_STATE,
             tiles: existingGame.tiles,
-            game: gameId,
+            gameId,
           }
           sendToEveryone(JSON.stringify(duckResponse));
           // Return new game state
@@ -107,7 +107,7 @@ wsServer.on('connection', (socket, request) => {
             type: MessageType.GAME_STATE,
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
-            game: gameId,
+            gameId,
           }
           sendToEveryone(JSON.stringify(gameState));
 
@@ -140,8 +140,6 @@ wsServer.on('connection', (socket, request) => {
             existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.isKinged = true;
           }
 
-         
-
           // Should that chip continue?
           const tileThatMoved = existingGame.tiles[moveRequest.to.x][moveRequest.to.y];
           const possibleMoves = getPossibleJumps(tileThatMoved, existingGame.tiles);
@@ -155,7 +153,7 @@ wsServer.on('connection', (socket, request) => {
             const selectedState: SelectedTileMessage = {
               type: MessageType.SELECTED_TILE,
               tile: tileThatMoved,
-              game: gameId,
+              gameId,
             }
             socket.send(JSON.stringify(selectedState));
             // Return new game state
@@ -163,7 +161,7 @@ wsServer.on('connection', (socket, request) => {
               type: MessageType.GAME_STATE,
               state: existingGame.state,
               playerTurn: existingGame.playerTurn,
-              game: gameId,
+              gameId,
             }
             sendToEveryone(JSON.stringify(gameState));
           } else {
@@ -197,21 +195,72 @@ wsServer.on('connection', (socket, request) => {
               type: MessageType.GAME_STATE,
               state: existingGame.state,
               playerTurn: existingGame.playerTurn,
-              game: gameId,
+              gameId,
             };
             sendToEveryone(JSON.stringify(nextState));
           }
-           // Update database
-           await ongoingGames.updateOne({ _id: gameId }, {
+          // Update database
+          await ongoingGames.updateOne({ _id: gameId }, {
             $set: existingGame
           })
           // Return new board state
           const boardState: BoardStateMessage = {
             type: MessageType.BOARD_STATE,
             tiles: existingGame.tiles,
-            game: gameId,
+            gameId,
           }
           sendToEveryone(JSON.stringify(boardState));
+          break;
+        case MessageType.ARRIVAL_ANNOUNCEMENT:
+          const arrivalData = message as ArrivalMessage;
+          console.log(arrivalData )
+          const returnData = {
+            gameId,
+            type: MessageType.ARRIVAL_RESPONSE,
+            tiles: existingGame.tiles,
+            state: existingGame.state,
+            playerTurn: existingGame.playerTurn,
+          } as Partial<ArrivalResponse>;
+          // If they want to be a player
+          if (arrivalData.desiredRole === PlayerRole.PLAYER) {
+            // Check if they already are a player
+            if (Object.values(existingGame.players).includes(arrivalData.player)) {
+              returnData.role = PlayerRole.PLAYER;
+              if (existingGame.players[1] === arrivalData.player) returnData.playerNumber = PlayerNumber.ONE;
+              else returnData.playerNumber = PlayerNumber.TWO;
+            } else {
+              // Check if existing player positions are full
+              if (existingGame.players[1] && existingGame.players[2]) {
+                // Too bad, assign them as a spectator
+                // FIXME: Don't do this if they are already spectators
+                existingGame.observers.push(arrivalData.player)
+                returnData.role = PlayerRole.SPECTATOR;
+              } else {
+                // Add them as a player
+                if (!existingGame.players[1]) {
+                  existingGame.players[1] = arrivalData.player;
+                  returnData.playerNumber = PlayerNumber.ONE;
+                }
+                else {
+                  existingGame.players[2] = arrivalData.player;
+                  returnData.playerNumber = PlayerNumber.TWO;
+                }
+                // Add the role to the response
+                returnData.role = PlayerRole.PLAYER;
+              }
+            }
+          } else {
+            // Add them as a spectator
+            // FIXME: Don't do this if they are already spectators
+            existingGame.observers.push(arrivalData.player)
+            returnData.role = PlayerRole.SPECTATOR;
+          }
+          // Save the state of the existing game
+          await ongoingGames.updateOne({ _id: gameId }, {
+            $set: existingGame
+          })
+          // In either case, return current game and board state
+          socket.send(JSON.stringify(returnData));
           break;
         default:
           break;

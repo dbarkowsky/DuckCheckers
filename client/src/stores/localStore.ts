@@ -1,5 +1,6 @@
 import { writable } from "svelte/store";
 import type { ITile } from "./gameStore";
+import type { PlayerRole } from "$lib/messages";
 
 export enum PlayerNumber {
   ONE,
@@ -16,6 +17,7 @@ export interface ILocal {
   selectedTile?: ITile;
   playerName?: string;
   playerNumber?: PlayerNumber;
+  playerRole?: PlayerRole;
 }
 
 const createDefaultLocal = () => ({
@@ -50,13 +52,21 @@ const createLocal = () => {
         ...original,
         isHovered: coords,
       })),
-    setPlayer: (name: string, number: PlayerNumber) =>
+    setPlayerName: (name: string) =>
       update((original) => ({
         ...original,
         playerName: name,
+      })),
+      setPlayerNumber: (number: PlayerNumber) =>
+      update((original) => ({
+        ...original,
         playerNumber: number,
+      })),
+      setPlayerRole: (role: PlayerRole) =>
+      update((original) => ({
+        ...original,
+        playerRole: role,
       }))
-
   };
 }
 

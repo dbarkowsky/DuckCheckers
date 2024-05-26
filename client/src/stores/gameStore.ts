@@ -10,10 +10,7 @@ export enum GameState {
 
 export interface IGame {
   state: GameState,
-  players: {
-    1: string | undefined;
-    2: string | undefined;
-  },
+  players: Record<number, string | undefined>;
   playerTurn: PlayerNumber,
   tiles: ITile[][]
 }
