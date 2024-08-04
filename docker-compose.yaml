@@ -16,6 +16,7 @@ services:
       - duck-net
     ports:
       - 22222:22222
+      - 5173:5173
     restart: unless-stopped
     command: sleep infinity
 
