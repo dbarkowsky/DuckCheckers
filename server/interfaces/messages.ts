@@ -22,7 +22,7 @@ export interface ITile {
   isRed: boolean;
   x: number;
   y: number;
-  chip: IChip | undefined;
+  chip?: IChip | undefined;
 }
 
 export enum PlayerNumber {
@@ -47,6 +47,7 @@ export enum MessageType {
   DUCK_PLACEMENT,
   ARRIVAL_ANNOUNCEMENT,
   ARRIVAL_RESPONSE,
+  RESET,
  }
 
  export enum PlayerRole {

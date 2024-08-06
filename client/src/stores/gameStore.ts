@@ -33,7 +33,7 @@ export const BOARD_SIZE = 8;
 const createGame = () => {
   const CHIP_RED = '#eb1e1e';
   const CHIP_BLACK = '#262626';
- 
+
   // Setting starting positions
   const blackChipLocations = [
     [0, 1], [0, 3], [0, 5], [0, 7],
@@ -89,11 +89,14 @@ const createGame = () => {
     tileExists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE,
     tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player && get(gameStore).tiles[x][y].chip?.player !== PlayerNumber.DUCK,
     tileHasChip: (x: number, y: number) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip !== null,
-    updateTiles: (newTiles: ITile[][]) =>
-      update((original) => ({
-        ...original,
-        tiles: newTiles,
-      })),
+    updateTiles: (newTiles: ITile[][]) => {
+      if (newTiles) {
+        update((original) => ({
+          ...original,
+          tiles: newTiles,
+        }))
+      }
+    },
     updateState: (newState: GameState) =>
       update((original) => ({
         ...original,

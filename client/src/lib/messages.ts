@@ -11,6 +11,7 @@ export enum MessageType {
  DUCK_PLACEMENT,
  ARRIVAL_ANNOUNCEMENT,
  ARRIVAL_RESPONSE,
+ RESET
 }
 
 export enum PlayerRole {

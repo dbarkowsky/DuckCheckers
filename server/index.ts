@@ -5,6 +5,7 @@ import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, Commun
 import db from "./db/conn";
 import { Condition, ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
+import { startingState } from "./constants/startingGameState";
 
 const { FRONTEND_URL, SERVER_PORT } = process.env;
 
@@ -70,14 +71,35 @@ wsServer.on('connection', (socket, request) => {
   socket.addEventListener('message', async (e) => {
     const gameId = request.url?.substring(1) as Condition<ObjectId> | undefined;
     // What to do with incomming message?
-    const message: BaseMessage = JSON.parse(e.data.toString());
-    // Get game from database
+    const message: BaseMessage = JSON.parse(e.data.toString());    // Get game from database
     const existingGame = await ongoingGames.findOne({ _id: gameId })
     if (existingGame) {
       switch (message.type) {
         case MessageType.COMMUNICATION:
           const data = message as CommunicationMessage;
           sendToEveryone(JSON.stringify(data));
+          break;
+        case MessageType.RESET: // TODO: Remove at some point. Temporary to allow testing.
+          const result = await ongoingGames.updateOne({ _id: gameId }, {
+            $set: startingState
+          })
+          if (result.modifiedCount === 1){
+
+          }
+          const board: BoardStateMessage = {
+            type: MessageType.BOARD_STATE,
+            tiles: startingState.tiles,
+            gameId,
+          }
+          sendToEveryone(JSON.stringify(board));
+          // Return new game state
+          const state: GameStateMessage = {
+            type: MessageType.GAME_STATE,
+            state: 0,
+            playerTurn: 0,
+            gameId,
+          }
+          sendToEveryone(JSON.stringify(state));
           break;
         case MessageType.DUCK_PLACEMENT:
           // Get incoming message data

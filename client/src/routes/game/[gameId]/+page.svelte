@@ -127,6 +127,16 @@
 		<p class="text">Player Turn: {$gameStore.playerTurn}</p>
 		<p class="text">You: {$localStore.playerNumber}</p>
 		<p class="text">Selected: {JSON.stringify($localStore.selectedTile)}</p>
+
+		<button
+			on:click={() => {
+				socket.send(
+				JSON.stringify({
+					type: MessageType.RESET,
+				})
+			);
+			}}>Reset Game</button
+		>
 	</div>
 
 	<Board {socket} />
