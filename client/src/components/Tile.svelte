@@ -3,6 +3,7 @@
 	import localStore, { PlayerNumber } from '../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
 	import crownSVG from '../assets/crown.svg';
+	import duckSVG from '../assets/duck.svg';
 	import type { ITile } from '../stores/gameStore';
 	import { isPlayersTurn } from '$lib/isPlayersTurn';
 	import gameStore, { GameState } from '../stores/gameStore';
@@ -35,7 +36,7 @@
 		socket.send(
 			JSON.stringify({
 				type: MessageType.DUCK_PLACEMENT,
-				tile: tile,
+				tile: tile
 			} as DuckMessage)
 		);
 	};
@@ -66,7 +67,7 @@
 					break;
 				case GameState.PLAYER_DUCK:
 					// No chip is already here
-					if (!tile.chip){
+					if (!tile.chip) {
 						sendDuckPlacement(tile);
 					}
 					break;
@@ -107,9 +108,16 @@
 	}}
 >
 	{#if tile.chip}
-		<Chip colour={tile.chip.colour}>
+		<Chip
+			colour={tile.chip.colour}
+			rotate={tile.chip.player === PlayerNumber.TWO ||
+				(tile.chip.player === PlayerNumber.DUCK && $localStore.playerNumber === PlayerNumber.TWO)}
+		>
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
+			{/if}
+			{#if tile.chip.player === PlayerNumber.DUCK}
+				<img class="duck" src={duckSVG} alt="duck" />
 			{/if}
 		</Chip>
 	{/if}
@@ -138,8 +146,16 @@
 	.crown {
 		width: 80%;
 		position: absolute;
-		top: 10px;
-		left: 8px;
+		top: 12px;
+		left: 9px;
+		display: inline-block;
+	}
+
+	.duck {
+		width: 70%;
+		position: absolute;
+		top: 12px;
+		left: 15px;
 		display: inline-block;
 	}
 </style>

@@ -1,8 +1,9 @@
 <script lang="ts">
   export let colour: string = 'black';
+  export let rotate: boolean = false; // Rotate if player two or user is player two and chip is duck.
 </script>
 
-<div style="--colour:{colour};" class="chip">
+<div style="--colour:{colour};" class="chip {rotate ? 'rotate' : ''}">
   <slot/>
 </div>
 
@@ -16,5 +17,10 @@
     display: inline-block;
     height: 90%;
     width: 90%;
+    transition: all 1s ease-in-out;
+  }
+
+  .rotate {
+    rotate: 180deg;
   }
 </style>
