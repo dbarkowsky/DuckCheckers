@@ -24,11 +24,15 @@
 		background-color: rgba(245, 245, 245, 0.9);
 		margin: 2em auto;
     width: 100%;
+		max-width: 800px;
+		height: fit-content;
 		transition: 1s ease-in-out;
 	}
 
 	.row {
 		display: flex;
+		max-height: calc(90vh/8);
+		max-width: 800px;
 	}
 
 	.rotate {

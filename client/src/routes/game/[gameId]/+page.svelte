@@ -149,6 +149,7 @@
 
 	.background {
 		display: flex;
+		height: 100vh;
 	}
 
 	.side {
