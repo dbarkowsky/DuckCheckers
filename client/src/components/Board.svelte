@@ -20,16 +20,15 @@
 
 <style>
   #board {
-		padding:2em;
+		padding: 2%;
 		background-color: rgba(245, 245, 245, 0.9);
 		margin: 2em auto;
-    width: fit-content;
-		min-width: 800px; 
+    width: 100%;
 		transition: 1s ease-in-out;
 	}
 
 	.row {
-		height: 100px;
+		display: flex;
 	}
 
 	.rotate {

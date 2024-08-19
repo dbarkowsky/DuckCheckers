@@ -134,9 +134,11 @@
 
 	.red,
 	.black {
-		display: table-cell;
-		width: 100px;
-		height: 100px;
+		display: flex;
+		width: calc(100%/8);
+		aspect-ratio: 1 / 1;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.highlighted {
@@ -145,17 +147,11 @@
 
 	.crown {
 		width: 80%;
-		position: absolute;
-		top: 12px;
-		left: 9px;
 		display: inline-block;
 	}
 
 	.duck {
 		width: 70%;
-		position: absolute;
-		top: 12px;
-		left: 15px;
 		display: inline-block;
 	}
 </style>

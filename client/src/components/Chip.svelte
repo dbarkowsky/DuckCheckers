@@ -9,12 +9,12 @@
 
 <style>
   .chip {
-    top: 5px;
-    left: 5px;
     position: relative;
     background-color: var(--colour);
     border-radius: 50%;
-    display: inline-block;
+    display: flex;		
+    justify-content: center;
+		align-items: center;
     height: 90%;
     width: 90%;
     transition: all 1s ease-in-out;
