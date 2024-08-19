@@ -108,6 +108,26 @@ wsServer.on('connection', (socket, request) => {
           if (existingGame.state !== GameState.PLAYER_DUCK) break;
           // Is this valid duck placement?
           if (existingGame.tiles[duckData.tile.x][duckData.tile.y].chip) break;
+          // Clear original duck from board
+          const coords = {
+            x: -1,
+            y: -1,
+          };
+          let chipFound = false;
+          for (let xIndex = 0; xIndex < existingGame.tiles.length && !chipFound; xIndex += 1) {
+            const row = existingGame.tiles[xIndex];
+            for (let yIndex = 0; yIndex < row.length && !chipFound; yIndex += 1) {
+              const tile = row[yIndex];
+              if (tile.chip?.player === PlayerNumber.DUCK) {
+                coords.x = xIndex;
+                coords.y = yIndex;
+                chipFound = true;
+              }
+            }
+          }
+          if (chipFound && coords.x >= 0 && coords.y >= 0) {
+            existingGame.tiles[coords.x][coords.y].chip = undefined;
+          }
           // Set requested tile with duck
           existingGame.tiles[duckData.tile.x][duckData.tile.y].chip = createDuck();
           // Update state and player turn
@@ -187,26 +207,6 @@ wsServer.on('connection', (socket, request) => {
             }
             sendToEveryone(JSON.stringify(gameState));
           } else {
-            // Clear duck from board
-            const coords = {
-              x: -1,
-              y: -1,
-            };
-            let chipFound = false;
-            for (let xIndex = 0; xIndex < existingGame.tiles.length && !chipFound; xIndex += 1) {
-              const row = existingGame.tiles[xIndex];
-              for (let yIndex = 0; yIndex < row.length && !chipFound; yIndex += 1) {
-                const tile = row[yIndex];
-                if (tile.chip?.player === PlayerNumber.DUCK) {
-                  coords.x = xIndex;
-                  coords.y = yIndex;
-                  chipFound = true;
-                }
-              }
-            }
-            if (chipFound && coords.x >= 0 && coords.y >= 0) {
-              existingGame.tiles[coords.x][coords.y].chip = undefined;
-            }
             // Update state and database
             existingGame.state = GameState.PLAYER_DUCK;
             await ongoingGames.updateOne({ _id: gameId }, {
