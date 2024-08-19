@@ -108,6 +108,7 @@ wsServer.on('connection', (socket, request) => {
           if (existingGame.state !== GameState.PLAYER_DUCK) break;
           // Is this valid duck placement?
           if (existingGame.tiles[duckData.tile.x][duckData.tile.y].chip) break;
+          if ((duckData.tile.x + duckData.tile.y) % 2 === 0) break; // Only on black squares
           // Clear original duck from board
           const coords = {
             x: -1,
