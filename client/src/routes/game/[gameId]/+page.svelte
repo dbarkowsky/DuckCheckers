@@ -22,6 +22,7 @@
 	let fieldValue = '';
 	let socket: WebSocket;
 
+
 	onMount(() => {
 		socket = new WebSocket(
 			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
@@ -110,25 +111,39 @@
 			}}>GAME_END</button
 		> -->
 		<br />
+		<h2 class="text">Choose player:</h2>
 		<button
+			class="{$localStore.playerNumber === PlayerNumber.ONE ? 'button-selected' : ''}"
 			on:click={() => {
 				localStore.setPlayerNumber(PlayerNumber.ONE);
 				localStore.setPlayerRole(PlayerRole.PLAYER);
-			}}>PLAYER 1</button
+			}}>RED</button
 		>
 		<button
+			class="{$localStore.playerNumber === PlayerNumber.TWO ? 'button-selected' : ''}"
 			on:click={() => {
 				localStore.setPlayerNumber(PlayerNumber.TWO);
 				localStore.setPlayerRole(PlayerRole.PLAYER);
-			}}>PLAYER 2</button
+			}}>BLACK</button
 		>
 
-		<p class="text">Game state: {$gameStore.state}</p>
+		<!-- <p class="text">Game state: {$gameStore.state}</p>
 		<p class="text">Player Turn: {$gameStore.playerTurn}</p>
 		<p class="text">You: {$localStore.playerNumber}</p>
-		<p class="text">Selected: {JSON.stringify($localStore.selectedTile)}</p>
-
+		<p class="text">Selected: {JSON.stringify($localStore.selectedTile)}</p> -->
+		<h3 class="text">{$gameStore.playerTurn === 0 ? 'Red' : 'Black'}'s turn</h3>
+		{#if $gameStore.state === GameState.PLAYER_MOVE}
+			<h3 class="text">Move Chip</h3>
+		{/if}
+		{#if $gameStore.state === GameState.PLAYER_CONTINUE}
+			<h3 class="text">Continue Jumping</h3>
+		{/if}
+		{#if $gameStore.state === GameState.PLAYER_DUCK}
+			<h3 class="text">Place Duck</h3>
+		{/if}
+		<br>
 		<button
+			style="margin-top: 2em;"
 			on:click={() => {
 				socket.send(
 				JSON.stringify({
@@ -158,5 +173,22 @@
 
 	.text {
 		color: white;
+	}
+
+	button {
+		padding: 5px 10px;
+		font-weight: bold;
+		font-family: Geneva, Tahoma, sans-serif;
+		background-color: aliceblue;
+		border: none;
+		border-radius: 5px;
+	}
+
+	button:hover {
+		background-color: rgb(179, 209, 235);
+	}
+
+	.button-selected {
+		background-color: rgb(127, 226, 165);
 	}
 </style>
