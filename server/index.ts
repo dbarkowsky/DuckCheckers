@@ -236,7 +236,6 @@ wsServer.on('connection', (socket, request) => {
           break;
         case MessageType.ARRIVAL_ANNOUNCEMENT:
           const arrivalData = message as ArrivalMessage;
-          console.log(arrivalData )
           const returnData = {
             gameId,
             type: MessageType.ARRIVAL_RESPONSE,

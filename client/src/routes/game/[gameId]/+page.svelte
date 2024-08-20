@@ -11,7 +11,10 @@
 		type SelectedTileMessage,
 		type ArrivalMessage,
 		PlayerRole,
-		type ArrivalResponse
+		type ArrivalResponse,
+
+		type CommunicationMessage
+
 	} from '$lib/messages';
 	import localStore, { PlayerNumber } from '../../../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
@@ -61,7 +64,6 @@
 						localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
 					case MessageType.ARRIVAL_RESPONSE:
 						const arrivalData = message as ArrivalResponse;
-						console.log(arrivalData);
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
@@ -81,7 +83,13 @@
 	});
 
 	const sendMessage = (e: Event) => {
-		socket.send(fieldValue);
+		socket.send(JSON.stringify({
+			message: fieldValue,
+			type: MessageType.COMMUNICATION,
+			sender: $localStore.playerName,
+			time: new Date(),
+			gameId: data.gameId,
+		} as CommunicationMessage));
 	};
 </script>
 
@@ -111,7 +119,7 @@
 			}}>GAME_END</button
 		> -->
 		<br />
-		<h2 class="text">Choose player:</h2>
+		<h2 class="text">Choose colour:</h2>
 		<button
 			class="{$localStore.playerNumber === PlayerNumber.ONE ? 'button-selected' : ''}"
 			on:click={() => {
