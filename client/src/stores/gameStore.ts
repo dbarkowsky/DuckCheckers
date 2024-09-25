@@ -13,6 +13,10 @@ export interface IGame {
   players: Record<number, string | undefined>;
   playerTurn: PlayerNumber,
   tiles: ITile[][]
+  // TODO: Not all of these are actually optional when received...
+  _id?: string;
+  created?: Date;
+  observers?: any[];
 }
 
 export interface ITile {
