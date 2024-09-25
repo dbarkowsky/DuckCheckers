@@ -3,11 +3,11 @@
 	import localStore, { PlayerNumber } from '../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
 	import crownSVG from '../assets/crown.svg';
-	import duckSVG from '../assets/duck.svg';
 	import type { ITile } from '../stores/gameStore';
 	import { isPlayersTurn } from '$lib/isPlayersTurn';
 	import gameStore, { GameState } from '../stores/gameStore';
 	import { MessageType, type DuckMessage, type MoveRequestMessage } from '$lib/messages';
+	import duckWithKnife from '../assets/duckWithKnife.svg'
 
 	export let tile: ITile;
 	export let socket: WebSocket;
@@ -21,7 +21,6 @@
 			(coord: { x: number; y: number }) => coord.x === tile.x && coord.y === tile.y
 		);
 
-	// TODO: Send the game number back as well
 	const sendMove = (tile: ITile) => {
 		socket.send(
 			JSON.stringify({
@@ -117,7 +116,7 @@
 				<img class="crown" src={crownSVG} alt="crown" />
 			{/if}
 			{#if tile.chip.player === PlayerNumber.DUCK}
-				<img class="duck" src={duckSVG} alt="duck" />
+				<img class="duck" src={duckWithKnife} alt="duck" />
 			{/if}
 		</Chip>
 	{/if}
