@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Chip from './../Chip.svelte';
-	import { PlayerNumber } from '../../stores/localStore';
+	import { PlayerPosition } from '../../stores/localStore';
 	import crownSVG from '../../assets/crown.svg';
 	import duckWithKnife from '../../assets/duckWithKnife.svg'
 	import type { ITile } from '../../stores/gameStore';
@@ -20,7 +20,7 @@
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
 			{/if}
-			{#if tile.chip.player === PlayerNumber.DUCK}
+			{#if tile.chip.player === PlayerPosition.DUCK}
 				<img class="duck" src={duckWithKnife} alt="duck" />
 			{/if}
 		</Chip>

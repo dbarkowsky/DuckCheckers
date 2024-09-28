@@ -3,7 +3,7 @@ import db from '../db/conn';
 import { Request, Response } from 'express';
 import { IOngoingGame } from '../interfaces/IOngoingGame';
 import { ObjectId, WithId, InsertOneResult } from 'mongodb';
-import { GameState, PlayerNumber } from '../interfaces/messages';
+import { GameState, PlayerPosition } from '../interfaces/messages';
 
 const collection = db.collection<IOngoingGame>('ongoingGames');
 
@@ -41,7 +41,7 @@ export const createNewOngoing = async (req: Request, res: Response) => {
     observers: [],
     created: new Date(),
     state: GameState.PLAYER_MOVE,
-    playerTurn: PlayerNumber.ONE,
+    playerTurn: PlayerPosition.ONE,
   }
 
   try {

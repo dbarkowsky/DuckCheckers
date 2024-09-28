@@ -1,11 +1,11 @@
 import { writable } from "svelte/store";
 import type { ITile } from "./gameStore";
-import type { PlayerRole } from "$lib/messages";
 
-export enum PlayerNumber {
+export enum PlayerPosition {
   ONE,
   TWO,
   DUCK,
+  OBSERVER,
 }
 
 export interface ILocal {
@@ -16,12 +16,12 @@ export interface ILocal {
   isHovered?: { x: number, y: number } | undefined;
   selectedTile?: ITile;
   playerName?: string;
-  playerNumber?: PlayerNumber;
-  playerRole?: PlayerRole;
+  playerPosition: PlayerPosition;
 }
 
 const createDefaultLocal = () => ({
   possibleMoves: [],
+  playerPosition: PlayerPosition.OBSERVER,
 } as ILocal)
 
 const createLocal = () => {
@@ -57,16 +57,11 @@ const createLocal = () => {
         ...original,
         playerName: name,
       })),
-      setPlayerNumber: (number: PlayerNumber) =>
+      setPlayerPosition: (number: PlayerPosition) =>
       update((original) => ({
         ...original,
-        playerNumber: number,
+        playerPosition: number,
       })),
-      setPlayerRole: (role: PlayerRole) =>
-      update((original) => ({
-        ...original,
-        playerRole: role,
-      }))
   };
 }
 

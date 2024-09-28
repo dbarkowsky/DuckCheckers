@@ -1,6 +1,6 @@
 import type { ITile } from "../stores/gameStore";
 import gameStore from "../stores/gameStore";
-import { PlayerNumber } from "../stores/localStore";
+import { PlayerPosition } from "../stores/localStore";
 
 const getPossibleMoves = (tile: ITile, onlyJumps: boolean = false) => {
   const relativePositions = [{x: -1, y:-1}, {x: -1, y:1}, {x: 1, y:-1}, {x: 1, y: 1}];
@@ -25,11 +25,11 @@ const getPossibleMoves = (tile: ITile, onlyJumps: boolean = false) => {
       // What is the difference for x coordinate?
       const xDifference = coord.x - tile.x;
       // Player 1 chips can only move negative x
-      if (tile.chip?.player === PlayerNumber.ONE && xDifference < 0){
+      if (tile.chip?.player === PlayerPosition.ONE && xDifference < 0){
         return true;
       }
       // Player 2 chips can only move positive x
-      else if (tile.chip?.player === PlayerNumber.TWO && xDifference > 0){
+      else if (tile.chip?.player === PlayerPosition.TWO && xDifference > 0){
         return true;
       }
       return false;

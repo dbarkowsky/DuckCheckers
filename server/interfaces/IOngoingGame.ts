@@ -1,4 +1,4 @@
-import { GameState, ITile, PlayerNumber } from "./messages.ts";
+import { GameState, ITile, PlayerPosition } from "./messages.ts";
 
 export interface IOngoingGame {
   players: Record<number, string | undefined>;
@@ -6,5 +6,5 @@ export interface IOngoingGame {
   tiles: ITile[][];
   observers: string[];
   state: GameState;
-  playerTurn: PlayerNumber;
+  playerTurn: PlayerPosition;
 }

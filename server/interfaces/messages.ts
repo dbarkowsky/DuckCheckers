@@ -25,14 +25,15 @@ export interface ITile {
   chip?: IChip | undefined;
 }
 
-export enum PlayerNumber {
+export enum PlayerPosition {
   ONE,
   TWO,
   DUCK,
+  OBSERVER,
 }
 
 export interface IChip {
-  player: PlayerNumber;
+  player: PlayerPosition;
   colour: string;
   isKinged: boolean;
 }
@@ -49,11 +50,6 @@ export enum MessageType {
   ARRIVAL_RESPONSE,
   RESET,
  }
-
- export enum PlayerRole {
-  PLAYER,
-  SPECTATOR
-}
  
  export interface BaseMessage {
   type: MessageType;
@@ -63,14 +59,13 @@ export enum MessageType {
 export interface ArrivalMessage extends BaseMessage {
   type: MessageType.ARRIVAL_ANNOUNCEMENT;
   player: string;
-  desiredRole: PlayerRole;
+  desiredPosition: PlayerPosition;
 }
 
 export interface ArrivalResponse extends BaseMessage {
   type: MessageType.ARRIVAL_RESPONSE;
-  playerNumber?: PlayerNumber;
-  role: PlayerRole;
-  playerTurn: PlayerNumber;
+  playerPosition: PlayerPosition;
+  playerTurn: PlayerPosition;
   state: GameState;
   tiles: ITile[][];
 }
@@ -85,7 +80,7 @@ export interface ArrivalResponse extends BaseMessage {
  export interface GameStateMessage extends BaseMessage {
    type: MessageType.GAME_STATE;
    state: GameState;
-   playerTurn: PlayerNumber;
+   playerTurn: PlayerPosition;
  }
  
  export interface BoardStateMessage extends BaseMessage {

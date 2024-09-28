@@ -32,12 +32,4 @@
 		justify-content: space-around;
 		margin: 0 auto;
 	}
-
-	.side {
-		max-width: 300px;
-	}
-
-  .text {
-    color: white;
-  }
 </style>

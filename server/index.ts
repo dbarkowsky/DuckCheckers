@@ -1,7 +1,7 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
-import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerNumber, PlayerRole, SelectedTileMessage } from './interfaces/messages.ts'
+import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerPosition, SelectedTileMessage } from './interfaces/messages.ts'
 import db from "./db/conn";
 import { Condition, ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
@@ -19,7 +19,7 @@ const BOARD_SIZE = 8;
 
 const getPossibleJumps = (tile: ITile, tiles: ITile[][]) => {
   const tileExists = (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
-  const tileHasOpponentChip = (x: number, y: number, movingTile: ITile) => tiles[x][y].chip && tiles[x][y].chip?.player !== movingTile.chip?.player && tiles[x][y].chip?.player !== PlayerNumber.DUCK;
+  const tileHasOpponentChip = (x: number, y: number, movingTile: ITile) => tiles[x][y].chip && tiles[x][y].chip?.player !== movingTile.chip?.player && tiles[x][y].chip?.player !== PlayerPosition.DUCK;
   const tileHasChip = (x: number, y: number) => tiles[x][y].chip && tiles[x][y].chip !== null;
   const relativePositions = [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 1, y: -1 }, { x: 1, y: 1 }];
   return relativePositions.map(diff => {
@@ -43,11 +43,11 @@ const getPossibleJumps = (tile: ITile, tiles: ITile[][]) => {
         // What is the difference for x coordinate?
         const xDifference = coord.x - tile.x;
         // Player 1 chips can only move negative x
-        if (tile.chip?.player === PlayerNumber.ONE && xDifference < 0) {
+        if (tile.chip?.player === PlayerPosition.ONE && xDifference < 0) {
           return true;
         }
         // Player 2 chips can only move positive x
-        else if (tile.chip?.player === PlayerNumber.TWO && xDifference > 0) {
+        else if (tile.chip?.player === PlayerPosition.TWO && xDifference > 0) {
           return true;
         }
         return false;
@@ -60,7 +60,7 @@ const getPossibleJumps = (tile: ITile, tiles: ITile[][]) => {
 
 const CHIP_YELLOW = '#f5ff13'
 const createDuck = () => ({
-  player: PlayerNumber.DUCK,
+  player: PlayerPosition.DUCK,
   isKinged: false,
   colour: CHIP_YELLOW,
 } as IChip)
@@ -119,7 +119,7 @@ wsServer.on('connection', (socket, request) => {
             const row = existingGame.tiles[xIndex];
             for (let yIndex = 0; yIndex < row.length && !chipFound; yIndex += 1) {
               const tile = row[yIndex];
-              if (tile.chip?.player === PlayerNumber.DUCK) {
+              if (tile.chip?.player === PlayerPosition.DUCK) {
                 coords.x = xIndex;
                 coords.y = yIndex;
                 chipFound = true;
@@ -133,7 +133,7 @@ wsServer.on('connection', (socket, request) => {
           existingGame.tiles[duckData.tile.x][duckData.tile.y].chip = createDuck();
           // Update state and player turn
           existingGame.state = GameState.PLAYER_MOVE;
-          existingGame.playerTurn = existingGame.playerTurn === PlayerNumber.ONE ? PlayerNumber.TWO : PlayerNumber.ONE
+          existingGame.playerTurn = existingGame.playerTurn === PlayerPosition.ONE ? PlayerPosition.TWO : PlayerPosition.ONE
           // Update database
           await ongoingGames.updateOne({ _id: gameId }, {
             $set: existingGame
@@ -175,11 +175,11 @@ wsServer.on('connection', (socket, request) => {
 
           // Should it be kinged?
           // Player 1 has reached top row.
-          if (moveRequest.to.x === 0 && existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.player === PlayerNumber.ONE) {
+          if (moveRequest.to.x === 0 && existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.player === PlayerPosition.ONE) {
             existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.isKinged = true;
           }
           // Player 2 has reached bottom row.
-          if (moveRequest.to.x === existingGame.tiles.length - 1 && existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.player === PlayerNumber.TWO) {
+          if (moveRequest.to.x === existingGame.tiles.length - 1 && existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.player === PlayerPosition.TWO) {
             existingGame.tiles[moveRequest.to.x][moveRequest.to.y].chip!.isKinged = true;
           }
 
@@ -244,38 +244,35 @@ wsServer.on('connection', (socket, request) => {
             playerTurn: existingGame.playerTurn,
           } as Partial<ArrivalResponse>;
           // If they want to be a player
-          if (arrivalData.desiredRole === PlayerRole.PLAYER) {
+          if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
             // Check if they already are a player
             if (Object.values(existingGame.players).includes(arrivalData.player)) {
-              returnData.role = PlayerRole.PLAYER;
-              if (existingGame.players[1] === arrivalData.player) returnData.playerNumber = PlayerNumber.ONE;
-              else returnData.playerNumber = PlayerNumber.TWO;
+              if (existingGame.players[1] === arrivalData.player) returnData.playerPosition = PlayerPosition.ONE;
+              else returnData.playerPosition = PlayerPosition.TWO;
             } else {
               // Check if existing player positions are full
               if (existingGame.players[1] && existingGame.players[2]) {
                 // Too bad, assign them as a spectator
-                // FIXME: Don't do this if they are already spectators
+                // FIXME: Don't do this if they are already observers
                 existingGame.observers.push(arrivalData.player)
-                returnData.role = PlayerRole.SPECTATOR;
+                returnData.playerPosition = PlayerPosition.OBSERVER;
               } else {
                 // Add them as a player
                 if (!existingGame.players[1]) {
                   existingGame.players[1] = arrivalData.player;
-                  returnData.playerNumber = PlayerNumber.ONE;
+                  returnData.playerPosition = PlayerPosition.ONE;
                 }
                 else {
                   existingGame.players[2] = arrivalData.player;
-                  returnData.playerNumber = PlayerNumber.TWO;
+                  returnData.playerPosition = PlayerPosition.TWO;
                 }
-                // Add the role to the response
-                returnData.role = PlayerRole.PLAYER;
               }
             }
           } else {
             // Add them as a spectator
             // FIXME: Don't do this if they are already spectators
             existingGame.observers.push(arrivalData.player)
-            returnData.role = PlayerRole.SPECTATOR;
+            returnData.playerPosition = PlayerPosition.OBSERVER;
           }
           // Save the state of the existing game
           await ongoingGames.updateOne({ _id: gameId }, {

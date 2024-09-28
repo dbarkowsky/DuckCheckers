@@ -1,5 +1,5 @@
 import { get, writable } from "svelte/store";
-import { PlayerNumber } from "./localStore";
+import { PlayerPosition } from "./localStore";
 
 export enum GameState {
   PLAYER_MOVE,
@@ -11,7 +11,7 @@ export enum GameState {
 export interface IGame {
   state: GameState,
   players: Record<number, string | undefined>;
-  playerTurn: PlayerNumber,
+  playerTurn: PlayerPosition,
   tiles: ITile[][]
   // TODO: Not all of these are actually optional when received...
   _id?: string;
@@ -27,7 +27,7 @@ export interface ITile {
 }
 
 export interface IChip {
-  player: PlayerNumber;
+  player: PlayerPosition;
   colour: string;
   isKinged: boolean;
 }
@@ -56,7 +56,7 @@ const createGame = () => {
     const isBlack = blackChipLocations.some(coords => coords[0] === x && coords[1] === y);
     if (!isRed && !isBlack) return undefined;
     return {
-      player: isRed ? PlayerNumber.ONE : PlayerNumber.TWO,
+      player: isRed ? PlayerPosition.ONE : PlayerPosition.TWO,
       colour: isRed ? CHIP_RED : CHIP_BLACK,
       isKinged: false,
     } as IChip
@@ -82,7 +82,7 @@ const createGame = () => {
       1: undefined,
       2: undefined,
     },
-    playerTurn: PlayerNumber.ONE,
+    playerTurn: PlayerPosition.ONE,
     tiles: makeDefaultTiles(),
   }
 
@@ -91,7 +91,7 @@ const createGame = () => {
     subscribe,
     replace: (replacement: IGame) => set(replacement),
     tileExists: (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE,
-    tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player && get(gameStore).tiles[x][y].chip?.player !== PlayerNumber.DUCK,
+    tileHasOpponentChip: (x: number, y: number, movingTile: ITile) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip?.player !== movingTile.chip?.player && get(gameStore).tiles[x][y].chip?.player !== PlayerPosition.DUCK,
     tileHasChip: (x: number, y: number) => get(gameStore).tiles[x][y].chip && get(gameStore).tiles[x][y].chip !== null,
     updateTiles: (newTiles: ITile[][]) => {
       if (newTiles) {
@@ -106,7 +106,7 @@ const createGame = () => {
         ...original,
         state: newState,
       })),
-    updateTurn: (newTurn: PlayerNumber) =>
+    updateTurn: (newTurn: PlayerPosition) =>
       update((original) => ({
         ...original,
         playerTurn: newTurn,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Chip from './Chip.svelte';
-	import localStore, { PlayerNumber } from '../stores/localStore';
+	import localStore, { PlayerPosition } from '../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
 	import crownSVG from '../assets/crown.svg';
 	import type { ITile } from '../stores/gameStore';
@@ -44,7 +44,7 @@
 		if (isPlayersTurn()) {
 			switch ($gameStore.state) {
 				case GameState.PLAYER_MOVE:
-					if (tile.chip && tile.chip.player === $localStore.playerNumber) {
+					if (tile.chip && tile.chip.player === $localStore.playerPosition) {
 						localStore.setSelectedTile(tile);
 						// Decide which tiles can be moved to
 						localStore.setPossibleMoves(getPossibleMoves(tile));
@@ -79,8 +79,8 @@
 	const shouldHighlightOnHover = () => {
 		return (
 			tile.chip &&
-			tile.chip.player === $localStore.playerNumber &&
-			$localStore.playerNumber === $gameStore.playerTurn &&
+			tile.chip.player === $localStore.playerPosition &&
+			$localStore.playerPosition === $gameStore.playerTurn &&
 			$gameStore.state === GameState.PLAYER_MOVE
 		);
 	};
@@ -109,13 +109,13 @@
 	{#if tile.chip}
 		<Chip
 			colour={tile.chip.colour}
-			rotate={tile.chip.player === PlayerNumber.TWO ||
-				(tile.chip.player === PlayerNumber.DUCK && $localStore.playerNumber === PlayerNumber.TWO)}
+			rotate={tile.chip.player === PlayerPosition.TWO ||
+				(tile.chip.player === PlayerPosition.DUCK && $localStore.playerPosition === PlayerPosition.TWO)}
 		>
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
 			{/if}
-			{#if tile.chip.player === PlayerNumber.DUCK}
+			{#if tile.chip.player === PlayerPosition.DUCK}
 				<img class="duck" src={duckWithKnife} alt="duck" />
 			{/if}
 		</Chip>

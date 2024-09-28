@@ -7,25 +7,35 @@
 		type BaseMessage,
 		type GameStateMessage,
 		type BoardStateMessage,
-		type MoveRequestMessage,
 		type SelectedTileMessage,
 		type ArrivalMessage,
-		PlayerRole,
 		type ArrivalResponse,
 
 		type CommunicationMessage
 
 	} from '$lib/messages';
-	import localStore, { PlayerNumber } from '../../../stores/localStore';
+	import localStore, { PlayerPosition } from '../../../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
 	import { env } from '$env/dynamic/public';
+	import { page } from '$app/stores';
 
 	export let data;
 
 	let fieldValue = '';
 	let socket: WebSocket;
+	
+	const playerRequestMap = (request: string | null) => {
+		switch(request) {
+			case 'red':
+				return PlayerPosition.ONE;
+			case 'black':
+				return PlayerPosition.TWO;
+			default:
+				return PlayerPosition.OBSERVER;
+		}
+	}
 
-
+	const playerRequest = playerRequestMap($page.url.searchParams.get('player'))
 	onMount(() => {
 		socket = new WebSocket(
 			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
@@ -36,7 +46,7 @@
 			socket.send(
 				JSON.stringify({
 					type: MessageType.ARRIVAL_ANNOUNCEMENT,
-					desiredRole: PlayerRole.PLAYER,
+					desiredPosition: playerRequest,
 					player: $localStore.playerName || 'joe'
 				} as ArrivalMessage)
 			);
@@ -67,9 +77,9 @@
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
-						localStore.setPlayerRole(arrivalData.role);
-						if (arrivalData.playerNumber !== undefined)
-							localStore.setPlayerNumber(arrivalData.playerNumber);
+						localStore.setPlayerPosition(arrivalData.playerPosition);
+						if (arrivalData.playerPosition !== undefined)
+							localStore.setPlayerPosition(arrivalData.playerPosition);
 						break;
 					case MessageType.GAME_END:
 						break;
@@ -121,17 +131,15 @@
 		<br />
 		<h2 class="text">Choose colour:</h2>
 		<button
-			class="{$localStore.playerNumber === PlayerNumber.ONE ? 'button-selected' : ''}"
+			class="{$localStore.playerPosition === PlayerPosition.ONE ? 'button-selected' : ''}"
 			on:click={() => {
-				localStore.setPlayerNumber(PlayerNumber.ONE);
-				localStore.setPlayerRole(PlayerRole.PLAYER);
+				localStore.setPlayerPosition(PlayerPosition.ONE);
 			}}>RED</button
 		>
 		<button
-			class="{$localStore.playerNumber === PlayerNumber.TWO ? 'button-selected' : ''}"
+			class="{$localStore.playerPosition === PlayerPosition.TWO ? 'button-selected' : ''}"
 			on:click={() => {
-				localStore.setPlayerNumber(PlayerNumber.TWO);
-				localStore.setPlayerRole(PlayerRole.PLAYER);
+				localStore.setPlayerPosition(PlayerPosition.TWO);
 			}}>BLACK</button
 		>
 

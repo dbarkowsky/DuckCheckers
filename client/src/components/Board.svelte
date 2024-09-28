@@ -2,10 +2,10 @@
 	import Tile from "./Tile.svelte";
 	import type { ITile } from "../stores/gameStore";
 	import gameStore from "../stores/gameStore";
-	import localStore, { PlayerNumber } from "../stores/localStore";
+	import localStore, { PlayerPosition } from "../stores/localStore";
 	export let socket: WebSocket;
 
-	$: rotate = $localStore.playerNumber === PlayerNumber.TWO;
+	$: rotate = $localStore.playerPosition === PlayerPosition.TWO;
 </script>
 
 <div id="board" class:rotate>
