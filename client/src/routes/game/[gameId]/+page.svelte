@@ -10,9 +10,7 @@
 		type SelectedTileMessage,
 		type ArrivalMessage,
 		type ArrivalResponse,
-
 		type CommunicationMessage
-
 	} from '$lib/messages';
 	import localStore, { PlayerPosition } from '../../../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
@@ -23,9 +21,9 @@
 
 	let fieldValue = '';
 	let socket: WebSocket;
-	
+
 	const playerRequestMap = (request: string | null) => {
-		switch(request) {
+		switch (request) {
 			case 'red':
 				return PlayerPosition.ONE;
 			case 'black':
@@ -33,9 +31,9 @@
 			default:
 				return PlayerPosition.OBSERVER;
 		}
-	}
+	};
 
-	const playerRequest = playerRequestMap($page.url.searchParams.get('player'))
+	const playerRequest = playerRequestMap($page.url.searchParams.get('player'));
 	onMount(() => {
 		socket = new WebSocket(
 			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
@@ -74,11 +72,11 @@
 						localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
 					case MessageType.ARRIVAL_RESPONSE:
 						const arrivalData = message as ArrivalResponse;
+						console.log(arrivalData);
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
-						localStore.setPlayerPosition(arrivalData.playerPosition);
-						if (arrivalData.playerPosition !== undefined)
+						if (arrivalData.playerPosition)
 							localStore.setPlayerPosition(arrivalData.playerPosition);
 						break;
 					case MessageType.GAME_END:
@@ -93,13 +91,15 @@
 	});
 
 	const sendMessage = (e: Event) => {
-		socket.send(JSON.stringify({
-			message: fieldValue,
-			type: MessageType.COMMUNICATION,
-			sender: $localStore.playerName,
-			time: new Date(),
-			gameId: data.gameId,
-		} as CommunicationMessage));
+		socket.send(
+			JSON.stringify({
+				message: fieldValue,
+				type: MessageType.COMMUNICATION,
+				sender: $localStore.playerName,
+				time: new Date(),
+				gameId: data.gameId
+			} as CommunicationMessage)
+		);
 	};
 </script>
 
@@ -131,13 +131,13 @@
 		<br />
 		<h2 class="text">Choose colour:</h2>
 		<button
-			class="{$localStore.playerPosition === PlayerPosition.ONE ? 'button-selected' : ''}"
+			class={$localStore.playerPosition === PlayerPosition.ONE ? 'button-selected' : ''}
 			on:click={() => {
 				localStore.setPlayerPosition(PlayerPosition.ONE);
 			}}>RED</button
 		>
 		<button
-			class="{$localStore.playerPosition === PlayerPosition.TWO ? 'button-selected' : ''}"
+			class={$localStore.playerPosition === PlayerPosition.TWO ? 'button-selected' : ''}
 			on:click={() => {
 				localStore.setPlayerPosition(PlayerPosition.TWO);
 			}}>BLACK</button
@@ -157,15 +157,15 @@
 		{#if $gameStore.state === GameState.PLAYER_DUCK}
 			<h3 class="text">Place Duck</h3>
 		{/if}
-		<br>
+		<br />
 		<button
 			style="margin-top: 2em;"
 			on:click={() => {
 				socket.send(
-				JSON.stringify({
-					type: MessageType.RESET,
-				})
-			);
+					JSON.stringify({
+						type: MessageType.RESET
+					})
+				);
 			}}>Reset Game</button
 		>
 	</div>

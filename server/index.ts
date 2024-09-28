@@ -72,7 +72,8 @@ wsServer.on('connection', (socket, request) => {
     const gameId = request.url?.substring(1) as Condition<ObjectId> | undefined;
     // What to do with incomming message?
     const message: BaseMessage = JSON.parse(e.data.toString());    // Get game from database
-    const existingGame = await ongoingGames.findOne({ _id: gameId })
+    const findById = { _id: new ObjectId(gameId as unknown as string)}
+    const existingGame = gameId ? await ongoingGames.findOne(findById) : '';
     if (existingGame) {
       switch (message.type) {
         case MessageType.COMMUNICATION:
@@ -80,7 +81,7 @@ wsServer.on('connection', (socket, request) => {
           sendToEveryone(JSON.stringify(data));
           break;
         case MessageType.RESET: // TODO: Remove at some point. Temporary to allow testing.
-          const result = await ongoingGames.updateOne({ _id: gameId }, {
+          const result = await ongoingGames.updateOne(findById, {
             $set: startingState
           })
           if (result.modifiedCount === 1){
@@ -135,7 +136,7 @@ wsServer.on('connection', (socket, request) => {
           existingGame.state = GameState.PLAYER_MOVE;
           existingGame.playerTurn = existingGame.playerTurn === PlayerPosition.ONE ? PlayerPosition.TWO : PlayerPosition.ONE
           // Update database
-          await ongoingGames.updateOne({ _id: gameId }, {
+          await ongoingGames.updateOne(findById, {
             $set: existingGame
           })
           // Send back responses
@@ -189,7 +190,7 @@ wsServer.on('connection', (socket, request) => {
           if (pieceJumped && possibleMoves.length > 0) {
             // Update database
             existingGame.state = GameState.PLAYER_CONTINUE;
-            await ongoingGames.updateOne({ _id: gameId }, {
+            await ongoingGames.updateOne(findById, {
               $set: existingGame
             })
             // Send info for force-selected tile
@@ -210,7 +211,7 @@ wsServer.on('connection', (socket, request) => {
           } else {
             // Update state and database
             existingGame.state = GameState.PLAYER_DUCK;
-            await ongoingGames.updateOne({ _id: gameId }, {
+            await ongoingGames.updateOne(findById, {
               $set: existingGame
             })
             // Send updated the state of the game
@@ -223,7 +224,7 @@ wsServer.on('connection', (socket, request) => {
             sendToEveryone(JSON.stringify(nextState));
           }
           // Update database
-          await ongoingGames.updateOne({ _id: gameId }, {
+          await ongoingGames.updateOne(findById, {
             $set: existingGame
           })
           // Return new board state
@@ -243,6 +244,7 @@ wsServer.on('connection', (socket, request) => {
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
           } as Partial<ArrivalResponse>;
+          // TODO: Change order here. Should check if they are already a player first
           // If they want to be a player
           if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
             // Check if they already are a player
@@ -258,7 +260,7 @@ wsServer.on('connection', (socket, request) => {
                 returnData.playerPosition = PlayerPosition.OBSERVER;
               } else {
                 // Add them as a player
-                if (!existingGame.players[1]) {
+                if (arrivalData.desiredPosition === PlayerPosition.ONE) {
                   existingGame.players[1] = arrivalData.player;
                   returnData.playerPosition = PlayerPosition.ONE;
                 }
@@ -275,7 +277,7 @@ wsServer.on('connection', (socket, request) => {
             returnData.playerPosition = PlayerPosition.OBSERVER;
           }
           // Save the state of the existing game
-          await ongoingGames.updateOne({ _id: gameId }, {
+          await ongoingGames.updateOne(findById, {
             $set: existingGame
           })
           // In either case, return current game and board state
