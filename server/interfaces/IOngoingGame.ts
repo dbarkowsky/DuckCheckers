@@ -1,10 +1,11 @@
+import { DuckSocket } from "../index.ts";
 import { GameState, ITile, PlayerPosition } from "./messages.ts";
 
 export interface IOngoingGame {
-  players: Record<number, WebSocket | undefined>;
+  players: Record<number, DuckSocket | undefined>;
   created: Date;
   tiles: ITile[][];
-  observers: WebSocket[];
+  observers: DuckSocket[];
   state: GameState;
   playerTurn: PlayerPosition;
 }

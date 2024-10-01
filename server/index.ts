@@ -3,9 +3,10 @@ import ws from 'ws';
 import http from 'http';
 import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerPosition, SelectedTileMessage } from './interfaces/messages.ts'
 import db from "./db/conn";
-import { Condition, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
 import { startingState } from "./constants/startingGameState";
+import { v4 } from 'uuid';
 
 const { FRONTEND_URL, SERVER_PORT } = process.env;
 
@@ -65,8 +66,26 @@ const createDuck = () => ({
   colour: CHIP_YELLOW,
 } as IChip)
 
-interface DuckSocket extends WebSocket {
-  gameId: string;
+export interface DuckSocket extends WebSocket {
+  gameId?: string;
+  uuid: string;
+}
+
+const removeUserFromGame = async (uuid: string, gameId: ObjectId) => {
+  const existingGame = gameId ? await ongoingGames.findOne({ _id: gameId}) : '';
+    if (existingGame) {
+      // Remove matching observers
+      if (existingGame.observers.length) {
+        const observerIndex = existingGame.observers.findIndex((socket: DuckSocket) => socket.uuid === uuid);
+        if (observerIndex >= 0) existingGame.observers.splice(observerIndex, 1);
+      }
+      // Remove player from 1 or 2 position
+      if (existingGame.players[1]?.uuid === uuid) existingGame.players[1] = undefined;
+      if (existingGame.players[2]?.uuid === uuid) existingGame.players[2] = undefined;
+      await ongoingGames.updateOne({ _id: gameId}, {
+        $set: existingGame
+      })
+    }
 }
 
 // Websocket Mock Server
@@ -74,7 +93,10 @@ const wsServer = new ws.Server({ noServer: true }); // Not a real server.
 wsServer.on('connection', (socket: DuckSocket, request) => {
   const gameId = new ObjectId(request.url?.substring(1));
   socket.gameId = gameId.toString();
-  socket.addEventListener('message', async (e) => {
+  socket.uuid = v4();
+  // Start Ping Pong communication
+  socket.addEventListener('close', async () => {await removeUserFromGame(socket.uuid, gameId)})
+  socket.addEventListener('message', async (e: MessageEvent) => {
     // What to do with incomming message?
     const message: BaseMessage = JSON.parse(e.data.toString());    // Get game from database
     const findById = { _id: gameId}
@@ -86,12 +108,10 @@ wsServer.on('connection', (socket: DuckSocket, request) => {
           sendToEveryone(JSON.stringify(data), gameId.toString());
           break;
         case MessageType.RESET: // TODO: Remove at some point. Temporary to allow testing.
-          const result = await ongoingGames.updateOne(findById, {
+          await ongoingGames.updateOne(findById, {
             $set: startingState
           })
-          if (result.modifiedCount === 1) {
 
-          }
           const board: BoardStateMessage = {
             type: MessageType.BOARD_STATE,
             tiles: startingState.tiles,
@@ -249,17 +269,7 @@ wsServer.on('connection', (socket: DuckSocket, request) => {
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
           } as Partial<ArrivalResponse>;
-          // Check if they already are a player
-          // if (Object.values(existingGame.players).includes(arrivalData.player)) {
-          //   console.log(arrivalData)
-          //   if (existingGame.players[1] === arrivalData.player) returnData.playerPosition = PlayerPosition.ONE;
-          //   else returnData.playerPosition = PlayerPosition.TWO;
-          // } else {
             // If they want to be a player
-            // TODO: Remove this later
-            existingGame.players[1] = undefined;
-            existingGame.players[2] = undefined;
-            existingGame.observers = []
             if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
               // Check if existing player positions are full
               if (existingGame.players[1] && existingGame.players[2]) {
@@ -270,7 +280,6 @@ wsServer.on('connection', (socket: DuckSocket, request) => {
               } else {
                 // Add them as a player
                 if (arrivalData.desiredPosition === PlayerPosition.ONE) {
-                  console.log(socket)
                   existingGame.players[1] = socket;
                   returnData.playerPosition = PlayerPosition.ONE;
                 } else {
@@ -297,10 +306,6 @@ wsServer.on('connection', (socket: DuckSocket, request) => {
           break;
       }
     }
-
-    // Single client return
-    // socket.send('Return message ' + e.data.toString())
-
   })
 })
 
@@ -317,12 +322,12 @@ const sendToEveryone = (message: string, gameId: string) => {
 const server = http.createServer(app);
 
 server.listen(port, () => {
-  console.log(`Express is running at ${FRONTEND_URL ?? `localhost:${port}`}`);
+  console.info(`Express is running at ${FRONTEND_URL ?? `localhost:${port}`}`);
 });
+
 // Handles upgrade from HTTP to WS. Emits a connection event
 server.on('upgrade', (request, duplex, head) => {
   wsServer.handleUpgrade(request, duplex, head, socket => {
-    // console.log(request.url)
     wsServer.emit('connection', socket, request);
   });
 });

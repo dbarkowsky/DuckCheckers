@@ -14,6 +14,7 @@
     "@types/morgan": "^1.9.9",
     "@types/swagger-jsdoc": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.6",
+    "@types/uuid": "10.0.0",
     "@types/ws": "8.5.10",
     "@typescript-eslint/eslint-plugin": "6.9.1",
     "bun-types": "latest",
@@ -39,6 +40,7 @@
     "morgan": "^1.10.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
+    "uuid": "10.0.0",
     "ws": "8.16.0"
   }
 }

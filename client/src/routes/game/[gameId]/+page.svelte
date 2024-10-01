@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Board from '../../../components/Board.svelte';
-	import gameStore, { GameState, type IGame, type ITile } from '../../../stores/gameStore';
+	import gameStore, { GameState, type DuckSocket } from '../../../stores/gameStore';
 	import {
 		MessageType,
 		type BaseMessage,
@@ -20,7 +20,7 @@
 	export let data;
 
 	let fieldValue = '';
-	let socket: WebSocket;
+	let socket: DuckSocket;
 
 	const playerRequestMap = (request: string | null) => {
 		switch (request) {
@@ -34,6 +34,9 @@
 	};
 
 	const playerRequest = playerRequestMap($page.url.searchParams.get('player'));
+	onDestroy(() => {
+		socket.close();
+	});
 	onMount(() => {
 		socket = new WebSocket(
 			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
@@ -52,7 +55,7 @@
 		socket.addEventListener('message', (e) => {
 			const message = JSON.parse(e.data) as BaseMessage;
 			// Check to make sure game ID matches before handling
-			console.log(message)
+			console.log(message);
 			if (message.gameId === data.gameId) {
 				switch (message.type) {
 					case MessageType.COMMUNICATION:
