@@ -52,6 +52,7 @@
 		socket.addEventListener('message', (e) => {
 			const message = JSON.parse(e.data) as BaseMessage;
 			// Check to make sure game ID matches before handling
+			console.log(message)
 			if (message.gameId === data.gameId) {
 				switch (message.type) {
 					case MessageType.COMMUNICATION:
@@ -76,8 +77,7 @@
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
-						if (arrivalData.playerPosition)
-							localStore.setPlayerPosition(arrivalData.playerPosition);
+						localStore.setPlayerPosition(arrivalData.playerPosition);
 						break;
 					case MessageType.GAME_END:
 						break;

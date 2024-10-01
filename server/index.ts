@@ -69,10 +69,10 @@ const createDuck = () => ({
 const wsServer = new ws.Server({ noServer: true }); // Not a real server.
 wsServer.on('connection', (socket, request) => {
   socket.addEventListener('message', async (e) => {
-    const gameId = request.url?.substring(1) as Condition<ObjectId> | undefined;
+    const gameId = new ObjectId(request.url?.substring(1));
     // What to do with incomming message?
     const message: BaseMessage = JSON.parse(e.data.toString());    // Get game from database
-    const findById = { _id: new ObjectId(gameId as unknown as string)}
+    const findById = { _id: gameId}
     const existingGame = gameId ? await ongoingGames.findOne(findById) : '';
     if (existingGame) {
       switch (message.type) {
@@ -84,7 +84,7 @@ wsServer.on('connection', (socket, request) => {
           const result = await ongoingGames.updateOne(findById, {
             $set: startingState
           })
-          if (result.modifiedCount === 1){
+          if (result.modifiedCount === 1) {
 
           }
           const board: BoardStateMessage = {
@@ -244,38 +244,41 @@ wsServer.on('connection', (socket, request) => {
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
           } as Partial<ArrivalResponse>;
-          // TODO: Change order here. Should check if they are already a player first
-          // If they want to be a player
-          if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
-            // Check if they already are a player
-            if (Object.values(existingGame.players).includes(arrivalData.player)) {
-              if (existingGame.players[1] === arrivalData.player) returnData.playerPosition = PlayerPosition.ONE;
-              else returnData.playerPosition = PlayerPosition.TWO;
-            } else {
+          // Check if they already are a player
+          // if (Object.values(existingGame.players).includes(arrivalData.player)) {
+          //   console.log(arrivalData)
+          //   if (existingGame.players[1] === arrivalData.player) returnData.playerPosition = PlayerPosition.ONE;
+          //   else returnData.playerPosition = PlayerPosition.TWO;
+          // } else {
+            // If they want to be a player
+            // TODO: Remove this later
+            // existingGame.players[1] = undefined;
+            // existingGame.players[2] = undefined;
+            if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
               // Check if existing player positions are full
               if (existingGame.players[1] && existingGame.players[2]) {
                 // Too bad, assign them as a spectator
                 // FIXME: Don't do this if they are already observers
-                existingGame.observers.push(arrivalData.player)
+                existingGame.observers.push(socket)
                 returnData.playerPosition = PlayerPosition.OBSERVER;
               } else {
                 // Add them as a player
                 if (arrivalData.desiredPosition === PlayerPosition.ONE) {
-                  existingGame.players[1] = arrivalData.player;
+                  existingGame.players[1] = socket;
                   returnData.playerPosition = PlayerPosition.ONE;
-                }
-                else {
-                  existingGame.players[2] = arrivalData.player;
+                } else {
+                  existingGame.players[2] = socket;
                   returnData.playerPosition = PlayerPosition.TWO;
                 }
               }
+            } else {
+              // Add them as a spectator
+              // FIXME: Don't do this if they are already spectators
+              existingGame.observers.push(socket)
+              returnData.playerPosition = PlayerPosition.OBSERVER;
             }
-          } else {
-            // Add them as a spectator
-            // FIXME: Don't do this if they are already spectators
-            existingGame.observers.push(arrivalData.player)
-            returnData.playerPosition = PlayerPosition.OBSERVER;
-          }
+          // }
+          
           // Save the state of the existing game
           await ongoingGames.updateOne(findById, {
             $set: existingGame

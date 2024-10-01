@@ -5,14 +5,20 @@
 
   export let game: IGame;
 
-  const handleObserveClick = () =>{
-    goto(`/game/${game._id}`)
+  const handleJoinClick = (colour?: string) =>{
+    const params = new URLSearchParams({
+      player: colour ?? ''
+    })
+    goto(`/game/${game._id}?${params.toString()}`)
   }
 </script>
 
 <div class="game-card">
   <StaticBoard game={game}/>
-  <button on:click={handleObserveClick}>Observe</button>
+  <h2>JOIN AS:</h2>
+  <button on:click={() => handleJoinClick()}>Observer</button>
+  {#if !game.players[1]}<button on:click={() => handleJoinClick('red')}>Red</button>{/if}
+  {#if !game.players[2]}<button on:click={() => handleJoinClick('black')}>Black</button>{/if}
 </div>
 
 <style>
