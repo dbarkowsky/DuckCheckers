@@ -2,7 +2,7 @@
 	import Chip from './../Chip.svelte';
 	import { PlayerPosition } from '../../stores/localStore';
 	import crownSVG from '../../assets/crown.svg';
-	import duckWithKnife from '../../assets/duckWithKnife.svg'
+	import duckWithKnife from '../../assets/duckWithKnife.svg';
 	import type { ITile } from '../../stores/gameStore';
 
 	export let tile: ITile;
@@ -10,13 +10,9 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-	class={tile.isRed ? 'red' : 'black'}
->
+<div class={tile.isRed ? 'red' : 'black'}>
 	{#if tile.chip}
-		<Chip
-			colour={tile.chip.colour}
-		>
+		<Chip colour={tile.chip.colour}>
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
 			{/if}
@@ -39,7 +35,7 @@
 	.red,
 	.black {
 		display: flex;
-		width: calc(100%/8);
+		width: calc(100% / 8);
 		aspect-ratio: 1 / 1;
 		justify-content: center;
 		align-items: center;

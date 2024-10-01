@@ -7,7 +7,7 @@
 	import { isPlayersTurn } from '$lib/isPlayersTurn';
 	import gameStore, { GameState } from '../stores/gameStore';
 	import { MessageType, type DuckMessage, type MoveRequestMessage } from '$lib/messages';
-	import duckWithKnife from '../assets/duckWithKnife.svg'
+	import duckWithKnife from '../assets/duckWithKnife.svg';
 
 	export let tile: ITile;
 	export let socket: WebSocket;
@@ -110,7 +110,8 @@
 		<Chip
 			colour={tile.chip.colour}
 			rotate={tile.chip.player === PlayerPosition.TWO ||
-				(tile.chip.player === PlayerPosition.DUCK && $localStore.playerPosition === PlayerPosition.TWO)}
+				(tile.chip.player === PlayerPosition.DUCK &&
+					$localStore.playerPosition === PlayerPosition.TWO)}
 		>
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
@@ -134,7 +135,7 @@
 	.red,
 	.black {
 		display: flex;
-		width: calc(100%/8);
+		width: calc(100% / 8);
 		aspect-ratio: 1 / 1;
 		justify-content: center;
 		align-items: center;

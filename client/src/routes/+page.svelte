@@ -1,22 +1,25 @@
 <script lang="ts">
-	import { onMount } from "svelte";
+	import { onMount } from 'svelte';
 	import { env } from '$env/dynamic/public';
-	import type { IGame } from "../stores/gameStore";
-	import GameCard from "../components/GameCard/GameCard.svelte";
+	import type { IGame } from '../stores/gameStore';
+	import GameCard from '../components/GameCard/GameCard.svelte';
 
 	let games: IGame[] = [];
 	onMount(async () => {
-		const response = await fetch(`http://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/api/ongoing`, {
-			method: 'GET'
-		})
+		const response = await fetch(
+			`http://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/api/ongoing`,
+			{
+				method: 'GET'
+			}
+		);
 		games = await response.json();
 	});
 </script>
 
 <div class="background">
-		{#each games as game}
-			<GameCard game={game}/>
-  	{/each}
+	{#each games as game}
+		<GameCard {game} />
+	{/each}
 </div>
 
 <style>
