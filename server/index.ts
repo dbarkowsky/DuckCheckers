@@ -65,11 +65,16 @@ const createDuck = () => ({
   colour: CHIP_YELLOW,
 } as IChip)
 
+interface DuckSocket extends WebSocket {
+  gameId: string;
+}
+
 // Websocket Mock Server
 const wsServer = new ws.Server({ noServer: true }); // Not a real server.
-wsServer.on('connection', (socket, request) => {
+wsServer.on('connection', (socket: DuckSocket, request) => {
+  const gameId = new ObjectId(request.url?.substring(1));
+  socket.gameId = gameId.toString();
   socket.addEventListener('message', async (e) => {
-    const gameId = new ObjectId(request.url?.substring(1));
     // What to do with incomming message?
     const message: BaseMessage = JSON.parse(e.data.toString());    // Get game from database
     const findById = { _id: gameId}
@@ -78,7 +83,7 @@ wsServer.on('connection', (socket, request) => {
       switch (message.type) {
         case MessageType.COMMUNICATION:
           const data = message as CommunicationMessage;
-          sendToEveryone(JSON.stringify(data));
+          sendToEveryone(JSON.stringify(data), gameId.toString());
           break;
         case MessageType.RESET: // TODO: Remove at some point. Temporary to allow testing.
           const result = await ongoingGames.updateOne(findById, {
@@ -92,7 +97,7 @@ wsServer.on('connection', (socket, request) => {
             tiles: startingState.tiles,
             gameId,
           }
-          sendToEveryone(JSON.stringify(board));
+          sendToEveryone(JSON.stringify(board), gameId.toString());
           // Return new game state
           const state: GameStateMessage = {
             type: MessageType.GAME_STATE,
@@ -100,7 +105,7 @@ wsServer.on('connection', (socket, request) => {
             playerTurn: 0,
             gameId,
           }
-          sendToEveryone(JSON.stringify(state));
+          sendToEveryone(JSON.stringify(state), gameId.toString());
           break;
         case MessageType.DUCK_PLACEMENT:
           // Get incoming message data
@@ -145,7 +150,7 @@ wsServer.on('connection', (socket, request) => {
             tiles: existingGame.tiles,
             gameId,
           }
-          sendToEveryone(JSON.stringify(duckResponse));
+          sendToEveryone(JSON.stringify(duckResponse), gameId.toString());
           // Return new game state
           const gameState: GameStateMessage = {
             type: MessageType.GAME_STATE,
@@ -153,7 +158,7 @@ wsServer.on('connection', (socket, request) => {
             playerTurn: existingGame.playerTurn,
             gameId,
           }
-          sendToEveryone(JSON.stringify(gameState));
+          sendToEveryone(JSON.stringify(gameState), gameId.toString());
 
           break;
         case MessageType.MOVE_REQUEST:
@@ -207,7 +212,7 @@ wsServer.on('connection', (socket, request) => {
               playerTurn: existingGame.playerTurn,
               gameId,
             }
-            sendToEveryone(JSON.stringify(gameState));
+            sendToEveryone(JSON.stringify(gameState), gameId.toString());
           } else {
             // Update state and database
             existingGame.state = GameState.PLAYER_DUCK;
@@ -221,7 +226,7 @@ wsServer.on('connection', (socket, request) => {
               playerTurn: existingGame.playerTurn,
               gameId,
             };
-            sendToEveryone(JSON.stringify(nextState));
+            sendToEveryone(JSON.stringify(nextState), gameId.toString());
           }
           // Update database
           await ongoingGames.updateOne(findById, {
@@ -233,7 +238,7 @@ wsServer.on('connection', (socket, request) => {
             tiles: existingGame.tiles,
             gameId,
           }
-          sendToEveryone(JSON.stringify(boardState));
+          sendToEveryone(JSON.stringify(boardState), gameId.toString());
           break;
         case MessageType.ARRIVAL_ANNOUNCEMENT:
           const arrivalData = message as ArrivalMessage;
@@ -252,8 +257,9 @@ wsServer.on('connection', (socket, request) => {
           // } else {
             // If they want to be a player
             // TODO: Remove this later
-            // existingGame.players[1] = undefined;
-            // existingGame.players[2] = undefined;
+            existingGame.players[1] = undefined;
+            existingGame.players[2] = undefined;
+            existingGame.observers = []
             if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
               // Check if existing player positions are full
               if (existingGame.players[1] && existingGame.players[2]) {
@@ -264,6 +270,7 @@ wsServer.on('connection', (socket, request) => {
               } else {
                 // Add them as a player
                 if (arrivalData.desiredPosition === PlayerPosition.ONE) {
+                  console.log(socket)
                   existingGame.players[1] = socket;
                   returnData.playerPosition = PlayerPosition.ONE;
                 } else {
@@ -297,11 +304,11 @@ wsServer.on('connection', (socket, request) => {
   })
 })
 
-const sendToEveryone = (message: string) => {
+const sendToEveryone = (message: string, gameId: string) => {
   // Broadcast return
-  wsServer.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
+  (Array.from(wsServer.clients) as DuckSocket[]).filter((socket: DuckSocket) => socket.gameId === gameId).forEach((socket: DuckSocket) => {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(message);
     }
   })
 }
