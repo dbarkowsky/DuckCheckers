@@ -3,7 +3,8 @@ import db from '../db/conn';
 import { Request, Response } from 'express';
 import { IOngoingGame } from '../interfaces/IOngoingGame';
 import { ObjectId, WithId, InsertOneResult } from 'mongodb';
-import { GameState, PlayerPosition } from '../interfaces/messages';
+import { startingState } from '../constants/startingGameState';
+import { generateSlug } from 'random-word-slugs';
 
 const collection = db.collection<IOngoingGame>('ongoingGames');
 
@@ -35,17 +36,25 @@ export const getOneOngoing = async (req: Request, res: Response) => {
 }
 
 export const createNewOngoing = async (req: Request, res: Response) => {
-  const defaultGameObject: IOngoingGame = {
-    players: [],
-    tiles: [],
-    observers: [],
-    created: new Date(),
-    state: GameState.PLAYER_MOVE,
-    playerTurn: PlayerPosition.ONE,
+  const defaultGameObject: IOngoingGame = startingState;
+  interface PostBody {
+    gameName?: string;
   }
 
+  const { gameName } = req.body as PostBody;
+
+  const gameToAdd = {
+    ...defaultGameObject,
+    gameName: gameName ?? generateSlug(2, {
+      format: 'lower',
+      categories: {
+        noun: ['place']
+      },
+      partsOfSpeech: ["adjective", "noun"]
+    })
+  }
   try {
-    const result: InsertOneResult<IOngoingGame> = await collection.insertOne(defaultGameObject);
+    const result: InsertOneResult<IOngoingGame> = await collection.insertOne(gameToAdd);
     // Did the insertion go bad?
     if (!result.insertedId) {
       return res.status(400).send('Game creation failed.')

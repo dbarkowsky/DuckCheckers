@@ -17,9 +17,11 @@
 </script>
 
 <div class="background">
-	{#each games as game}
+	<div class="game-area">
+		{#each games as game}
 		<GameCard {game} />
 	{/each}
+	</div>
 </div>
 
 <style>
@@ -28,11 +30,14 @@
 	}
 
 	.background {
-		display: flex;
-		flex-wrap: wrap;
 		width: 100%;
 		max-width: 900px;
-		justify-content: space-around;
 		margin: 0 auto;
+	}
+
+	.game-area { 
+		justify-content: space-around;
+		display: flex;
+		flex-wrap: wrap;
 	}
 </style>

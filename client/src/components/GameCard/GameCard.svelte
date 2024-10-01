@@ -15,10 +15,10 @@
 
 <div class="game-card">
 	<StaticBoard {game} />
-	<h2>JOIN AS:</h2>
-	<button on:click={() => handleJoinClick()}>Observer</button>
+	<span>JOIN AS:</span>
 	{#if !game.players[1]}<button on:click={() => handleJoinClick('red')}>Red</button>{/if}
 	{#if !game.players[2]}<button on:click={() => handleJoinClick('black')}>Black</button>{/if}
+	<button on:click={() => handleJoinClick()}>Observer</button>
 </div>
 
 <style>

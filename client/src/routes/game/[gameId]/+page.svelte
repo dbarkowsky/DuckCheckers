@@ -39,7 +39,7 @@
 	});
 	onMount(() => {
 		socket = new WebSocket(
-			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
+			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}${$localStore.playerName ? `/${$localStore.playerName}` : ''}`
 		);
 		socket.addEventListener('open', () => {
 			console.log(`Connected to game ID: ${data.gameId}`);

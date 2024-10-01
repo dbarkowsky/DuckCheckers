@@ -1,9 +1,16 @@
-export const startingState = {
-  "_id": "123",
-  "state": 0,
-  "playerTurn": 0,
-  "players": {},
-  "tiles": [
+import { IOngoingGame } from "../interfaces/IOngoingGame";
+
+export const startingState: IOngoingGame = {
+  state: 0,
+  created: new Date(),
+  playerTurn: 0,
+  players: {
+    1: undefined,
+    2: undefined,
+  },
+  gameName: '',
+  observers: [],
+  tiles: [
     [
       {
         "isRed": true,

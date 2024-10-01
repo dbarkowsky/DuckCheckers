@@ -22,7 +22,8 @@ export interface ILocal {
 const createDefaultLocal = () =>
 	({
 		possibleMoves: [],
-		playerPosition: PlayerPosition.OBSERVER
+		playerPosition: PlayerPosition.OBSERVER,
+		playerName: undefined	
 	}) as ILocal;
 
 const createLocal = () => {

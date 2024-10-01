@@ -38,6 +38,7 @@
     "express-rate-limit": "^7.1.4",
     "mongodb": "6.2.0",
     "morgan": "^1.10.0",
+    "random-word-slugs": "0.1.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "uuid": "10.0.0",

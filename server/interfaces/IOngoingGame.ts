@@ -8,4 +8,5 @@ export interface IOngoingGame {
   observers: DuckSocket[];
   state: GameState;
   playerTurn: PlayerPosition;
+  gameName: string;
 }

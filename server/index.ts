@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
 import { startingState } from "./constants/startingGameState";
 import { v4 } from 'uuid';
+import { generateSlug } from 'random-word-slugs';
 
 const { FRONTEND_URL, SERVER_PORT } = process.env;
 
@@ -15,8 +16,6 @@ const port = +(SERVER_PORT ?? 9000);
 const ongoingGames = db.collection<IOngoingGame>('ongoingGames');
 
 const BOARD_SIZE = 8;
-
-
 
 const getPossibleJumps = (tile: ITile, tiles: ITile[][]) => {
   const tileExists = (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
@@ -67,8 +66,9 @@ const createDuck = () => ({
 } as IChip)
 
 export interface DuckSocket extends WebSocket {
-  gameId?: string;
+  gameId: string;
   uuid: string;
+  playerName: string;
 }
 
 const removeUserFromGame = async (uuid: string, gameId: ObjectId) => {
@@ -90,11 +90,20 @@ const removeUserFromGame = async (uuid: string, gameId: ObjectId) => {
 
 // Websocket Mock Server
 const wsServer = new ws.Server({ noServer: true }); // Not a real server.
-wsServer.on('connection', (socket: DuckSocket, request) => {
-  const gameId = new ObjectId(request.url?.substring(1));
+wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) => {
+  const requestParams = request.url?.substring(1).split('/')
+  const gameId = new ObjectId(requestParams?.at(0));
+  const playerName = requestParams?.at(1) ?? generateSlug(2, {
+    format: 'lower',
+    categories: {
+      noun: ['animals']
+    },
+    partsOfSpeech: ["adjective", "noun"]
+  })
+  socket.playerName = playerName;
   socket.gameId = gameId.toString();
   socket.uuid = v4();
-  // Start Ping Pong communication
+  // TODO: When user is removed, send user updates to clients
   socket.addEventListener('close', async () => {await removeUserFromGame(socket.uuid, gameId)})
   socket.addEventListener('message', async (e: MessageEvent) => {
     // What to do with incomming message?
@@ -268,6 +277,7 @@ wsServer.on('connection', (socket: DuckSocket, request) => {
             tiles: existingGame.tiles,
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
+            gameName: existingGame.gameName
           } as Partial<ArrivalResponse>;
             // If they want to be a player
             if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
@@ -301,6 +311,7 @@ wsServer.on('connection', (socket: DuckSocket, request) => {
           })
           // In either case, return current game and board state
           socket.send(JSON.stringify(returnData));
+          // TODO: Send player update to clients
           break;
         default:
           break;

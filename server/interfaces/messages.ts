@@ -1,4 +1,5 @@
 import { Condition, ObjectId } from "mongodb";
+import { DuckSocket } from "..";
 
 export enum GameState {
   PLAYER_MOVE,
@@ -68,6 +69,8 @@ export interface ArrivalResponse extends BaseMessage {
   playerTurn: PlayerPosition;
   state: GameState;
   tiles: ITile[][];
+  gameName: string;
+  players: Record<number, DuckSocket | undefined> 
 }
  
  export interface CommunicationMessage extends BaseMessage {
