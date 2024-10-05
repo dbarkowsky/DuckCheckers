@@ -23,7 +23,7 @@ const createDefaultLocal = () =>
 	({
 		possibleMoves: [],
 		playerPosition: PlayerPosition.OBSERVER,
-		playerName: undefined	
+		playerName: ''
 	}) as ILocal;
 
 const createLocal = () => {

@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
+	import { onMount } from 'svelte';
+	import localStore from '../stores/localStore';
+	import { generateSlug } from 'random-word-slugs';
+	import Tooltip from '../components/Tooltip.svelte';
 
 	let dialog: HTMLDialogElement;
 	const requestGame = async (player: 'red' | 'black') => {
@@ -21,11 +25,43 @@
 			console.error(response.text(), response.status);
 		}
 	};
+
+	const generateName = () =>
+		generateSlug(2, {
+			partsOfSpeech: ['adjective', 'noun'],
+			categories: {
+				adjective: ['personality', 'appearance', 'color'],
+				noun: ['animals']
+			}
+		});
+
+	onMount(() => {
+		let initialPlayerName = window.localStorage.getItem('playerName');
+		if (initialPlayerName == null) {
+			initialPlayerName = generateName();
+			window.localStorage.setItem('playerName', initialPlayerName);
+		}
+		localStore.setPlayerName(initialPlayerName);
+	});
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <nav>
 	<h1><a href="/" id="home-link">Duck Checkers</a></h1>
+	<div id="name-box">
+	<span>{'Your Name: '}</span>
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<Tooltip
+		tooltipText={'Click to scramble name'}
+		onClick={() => {
+			const newName = generateName();
+			window.localStorage.setItem('playerName', newName);
+			localStore.setPlayerName(newName);
+		}}
+	>
+		<span>{$localStore.playerName}</span>
+	</Tooltip>
+</div>
 	<button on:click={() => dialog.showModal()}>New Game</button>
 </nav>
 
@@ -81,5 +117,12 @@
 		width: 100vw;
 		height: 100vh;
 		background-color: rgba(255, 255, 255, 0.226);
+	}
+
+	#name-box {
+		display: flex;
+		align-items: center;
+		gap: 1em;
+		color: yellow;
 	}
 </style>

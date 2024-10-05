@@ -35,7 +35,7 @@
 
 	const playerRequest = playerRequestMap($page.url.searchParams.get('player'));
 	onDestroy(() => {
-		socket.close();
+		if(socket) socket.close();
 	});
 	onMount(() => {
 		socket = new WebSocket(
@@ -183,7 +183,7 @@
 
 	.background {
 		display: flex;
-		height: 100vh;
+		height: 80vh;
 	}
 
 	.side {
