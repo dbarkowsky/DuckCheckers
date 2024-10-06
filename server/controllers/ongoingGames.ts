@@ -43,15 +43,23 @@ export const createNewOngoing = async (req: Request, res: Response) => {
 
   const { gameName } = req.body as PostBody;
 
+  let cleanGameName = generateSlug(2, {
+    format: 'lower',
+    categories: {
+      noun: ['place']
+    },
+    partsOfSpeech: ["adjective", "noun"]
+  })
+
+  if (gameName && gameName.length) {
+    const exists = await collection.findOne({gameName: {$eq: gameName}})
+    if (exists) return res.status(400).send('Game name already in use.')
+    else cleanGameName = gameName;
+  }
+
   const gameToAdd = {
     ...defaultGameObject,
-    gameName: gameName ?? generateSlug(2, {
-      format: 'lower',
-      categories: {
-        noun: ['place']
-      },
-      partsOfSpeech: ["adjective", "noun"]
-    })
+    gameName: cleanGameName
   }
   try {
     const result: InsertOneResult<IOngoingGame> = await collection.insertOne(gameToAdd);

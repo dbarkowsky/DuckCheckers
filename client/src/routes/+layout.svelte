@@ -6,12 +6,20 @@
 	import { generateSlug } from 'random-word-slugs';
 	import Tooltip from '../components/Tooltip.svelte';
 
+	$: gameNameField = '';
+	$: dialogError = '';
 	let dialog: HTMLDialogElement;
 	const requestGame = async (player: 'red' | 'black') => {
 		const response = await fetch(
 			`http://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/api/ongoing`,
 			{
-				method: 'POST'
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'	
+				},
+				body: JSON.stringify({
+					gameName: gameNameField,
+				})
 			}
 		);
 		if (response.ok) {
@@ -22,7 +30,7 @@
 			goto(`/game/${newGame.insertedId}?${params.toString()}`);
 			dialog.close();
 		} else {
-			console.error(response.text(), response.status);
+			dialogError = await response.text();
 		}
 	};
 
@@ -79,6 +87,8 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="dialog-window" on:click={(e) => e.stopPropagation()}>
+		<input type="text" bind:value={gameNameField}/>
+		{#if dialogError.length}<p class="error-text">{dialogError}</p>{/if}
 		<button on:click={() => dialog.close()}>Cancel</button>
 		<button on:click={() => requestGame('red')}>Red</button>
 		<button on:click={() => requestGame('black')}>Black</button>
@@ -124,5 +134,9 @@
 		align-items: center;
 		gap: 1em;
 		color: yellow;
+	}
+
+	.error-text {
+		color: red;
 	}
 </style>

@@ -76,7 +76,6 @@
 						localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
 					case MessageType.ARRIVAL_RESPONSE:
 						const arrivalData = message as ArrivalResponse;
-						console.log(arrivalData);
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
