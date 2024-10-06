@@ -15,7 +15,7 @@ export interface ILocal {
 	}[];
 	isHovered?: { x: number; y: number } | undefined;
 	selectedTile?: ITile;
-	playerName?: string;
+	playerName: string;
 	playerPosition: PlayerPosition;
 }
 

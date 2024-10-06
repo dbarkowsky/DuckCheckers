@@ -93,23 +93,15 @@ const wsServer = new ws.Server({ noServer: true }); // Not a real server.
 wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) => {
   const requestParams = request.url?.substring(1).split('/')
   const gameId = new ObjectId(requestParams?.at(0));
-  const playerName = requestParams?.at(1) ?? generateSlug(2, {
-    format: 'lower',
-    categories: {
-      noun: ['animals']
-    },
-    partsOfSpeech: ["adjective", "noun"]
-  })
-  socket.playerName = playerName;
   socket.gameId = gameId.toString();
   socket.uuid = v4();
   // TODO: When user is removed, send user updates to clients
   socket.addEventListener('close', async () => {await removeUserFromGame(socket.uuid, gameId)})
   socket.addEventListener('message', async (e: MessageEvent) => {
     // What to do with incomming message?
-    const message: BaseMessage = JSON.parse(e.data.toString());    // Get game from database
+    const message: BaseMessage = JSON.parse(e.data.toString());   
     const findById = { _id: gameId}
-    const existingGame = gameId ? await ongoingGames.findOne(findById) : '';
+    const existingGame = gameId ? await ongoingGames.findOne(findById) : '';  // Get game from database
     if (existingGame) {
       switch (message.type) {
         case MessageType.COMMUNICATION:
@@ -277,8 +269,10 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
             tiles: existingGame.tiles,
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
-            gameName: existingGame.gameName
+            gameName: existingGame.gameName,
           } as Partial<ArrivalResponse>;
+            // Attach their name
+            socket.playerName = arrivalData.playerName;
             // If they want to be a player
             if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
               // Check if existing player positions are full

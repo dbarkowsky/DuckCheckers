@@ -39,16 +39,15 @@
 	});
 	onMount(() => {
 		socket = new WebSocket(
-			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}${$localStore.playerName ? `/${$localStore.playerName}` : ''}`
-		);
+			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
+		) as DuckSocket;
 		socket.addEventListener('open', () => {
-			console.log(`Connected to game ID: ${data.gameId}`);
 			// Announce arrival and request the current game state
 			socket.send(
 				JSON.stringify({
 					type: MessageType.ARRIVAL_ANNOUNCEMENT,
 					desiredPosition: playerRequest,
-					player: $localStore.playerName || 'joe'
+					playerName: $localStore.playerName,
 				} as ArrivalMessage)
 			);
 		});
@@ -80,6 +79,7 @@
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
 						localStore.setPlayerPosition(arrivalData.playerPosition);
+						console.log(`Connected to game ID: ${data.gameId} as ${$localStore.playerName}`);
 						break;
 					case MessageType.GAME_END:
 						break;

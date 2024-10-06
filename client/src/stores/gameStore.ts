@@ -9,8 +9,9 @@ export enum GameState {
 }
 
 export interface DuckSocket extends WebSocket {
-	gameId?: string;
-	uuid?: string;
+  gameId: string;
+  uuid: string;
+  playerName: string;
 }
 
 export interface IGame {
@@ -18,6 +19,7 @@ export interface IGame {
 	players: Record<number, DuckSocket | undefined>;
 	playerTurn: PlayerPosition;
 	tiles: ITile[][];
+	gameName: string;
 	// TODO: Not all of these are actually optional when received...
 	_id?: string;
 	created?: Date;
@@ -111,7 +113,8 @@ const createGame = () => {
 			2: undefined
 		},
 		playerTurn: PlayerPosition.ONE,
-		tiles: makeDefaultTiles()
+		tiles: makeDefaultTiles(),
+		gameName: '',
 	};
 
 	const { subscribe, set, update } = writable<IGame>(temporaryGameState);

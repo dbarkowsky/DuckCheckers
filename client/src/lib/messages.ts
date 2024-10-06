@@ -21,7 +21,7 @@ export interface BaseMessage {
 
 export interface ArrivalMessage extends BaseMessage {
 	type: MessageType.ARRIVAL_ANNOUNCEMENT;
-	player: string;
+	playerName: string;
 	desiredPosition: PlayerPosition;
 }
 

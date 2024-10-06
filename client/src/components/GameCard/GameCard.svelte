@@ -11,13 +11,18 @@
 		});
 		goto(`/game/${game._id}?${params.toString()}`);
 	};
+
 </script>
 
 <div class="game-card">
+	<h3>{game.gameName}</h3>
 	<StaticBoard {game} />
-	<span>JOIN AS:</span>
-	{#if !game.players[1]}<button on:click={() => handleJoinClick('red')}>Red</button>{/if}
-	{#if !game.players[2]}<button on:click={() => handleJoinClick('black')}>Black</button>{/if}
+	{#if !game.players[1]}<button on:click={() => handleJoinClick('red')}>Red</button>
+	{:else}<span>{game.players[1].playerName}</span>{/if}
+	<span>VS</span>
+	{#if !game.players[2]}<button on:click={() => handleJoinClick('black')}>Black</button>
+	{:else}<span>{game.players[2].playerName}</span>{/if}
+	<br/>
 	<button on:click={() => handleJoinClick()}>Observer</button>
 </div>
 
