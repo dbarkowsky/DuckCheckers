@@ -7,7 +7,6 @@ import { ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
 import { startingState } from "./constants/startingGameState";
 import { v4 } from 'uuid';
-import { generateSlug } from 'random-word-slugs';
 
 const { FRONTEND_URL, SERVER_PORT } = process.env;
 
@@ -270,6 +269,7 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
             gameName: existingGame.gameName,
+            players: existingGame.players,
           } as Partial<ArrivalResponse>;
             // Attach their name
             socket.playerName = arrivalData.playerName;

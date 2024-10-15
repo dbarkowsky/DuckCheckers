@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import type { ITile } from './gameStore';
 
 export enum PlayerPosition {
@@ -17,14 +17,36 @@ export interface ILocal {
 	selectedTile?: ITile;
 	playerName: string;
 	playerPosition: PlayerPosition;
+	taken: {
+		'red': number;
+		'black': number;
+	}
 }
 
 const createDefaultLocal = () =>
 	({
 		possibleMoves: [],
 		playerPosition: PlayerPosition.OBSERVER,
-		playerName: ''
+		playerName: '',
+		taken: {
+			'red': 0,
+			'black': 0,
+		}
 	}) as ILocal;
+
+	const startingChips = 12;
+	const countChips = (colour: 'red' | 'black', tiles: ITile[][]) => {
+		if (!tiles) return startingChips;
+		let count = 0;
+		const localTiles = tiles.flat(1);
+		const red = '#eb1e1e';
+		const black = '#262626';
+		localTiles.forEach((tile) => {
+			if (tile.chip?.colour === red && colour === 'red') count++;
+			if (tile.chip?.colour === black && colour === 'black') count++;
+		});
+		return count;
+	};
 
 const createLocal = () => {
 	// Setting up the store
@@ -63,7 +85,16 @@ const createLocal = () => {
 			update((original) => ({
 				...original,
 				playerPosition: number
+			})),
+		updateTaken: (tiles: ITile[][]) => {
+			const taken = get(localStore).taken;
+			taken['red'] = startingChips - countChips('red', tiles);
+			taken['black'] = startingChips - countChips('black', tiles);
+			update((original) => ({
+				...original,
+				taken: taken,
 			}))
+		}
 	};
 };
 

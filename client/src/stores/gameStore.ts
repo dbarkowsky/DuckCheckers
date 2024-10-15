@@ -145,7 +145,11 @@ const createGame = () => {
 			update((original) => ({
 				...original,
 				playerTurn: newTurn
-			}))
+			})),
+		updatePlayers: (players: Record<number, DuckSocket | undefined>) => update((original) => ({
+			...original,
+			players: players,
+		}))
 	};
 };
 

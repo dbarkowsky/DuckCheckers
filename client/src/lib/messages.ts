@@ -1,4 +1,4 @@
-import type { GameState, ITile } from '../stores/gameStore';
+import type { DuckSocket, GameState, ITile } from '../stores/gameStore';
 import type { PlayerPosition } from '../stores/localStore';
 
 export enum MessageType {
@@ -31,6 +31,7 @@ export interface ArrivalResponse extends BaseMessage {
 	playerTurn: PlayerPosition;
 	state: GameState;
 	tiles: ITile[][];
+	players: Record<number, DuckSocket | undefined>;
 }
 
 export interface CommunicationMessage extends BaseMessage {

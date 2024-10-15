@@ -16,6 +16,7 @@
 	import getPossibleMoves from '$lib/getPossibleMoves';
 	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
+	import PlayerCard from '../../../components/PlayerCard/PlayerCard.svelte';
 
 	export let data;
 
@@ -35,7 +36,7 @@
 
 	const playerRequest = playerRequestMap($page.url.searchParams.get('player'));
 	onDestroy(() => {
-		if(socket) socket.close();
+		if (socket) socket.close();
 	});
 	onMount(() => {
 		socket = new WebSocket(
@@ -47,7 +48,7 @@
 				JSON.stringify({
 					type: MessageType.ARRIVAL_ANNOUNCEMENT,
 					desiredPosition: playerRequest,
-					playerName: $localStore.playerName,
+					playerName: $localStore.playerName
 				} as ArrivalMessage)
 			);
 		});
@@ -67,6 +68,7 @@
 					case MessageType.BOARD_STATE:
 						const boardData = message as BoardStateMessage;
 						gameStore.updateTiles(boardData.tiles);
+						localStore.updateTaken(boardData.tiles);
 						break;
 					case MessageType.SELECTED_TILE:
 						const selectedData = message as SelectedTileMessage;
@@ -78,7 +80,9 @@
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
+						gameStore.updatePlayers(arrivalData.players);
 						localStore.setPlayerPosition(arrivalData.playerPosition);
+						localStore.updateTaken(arrivalData.tiles);
 						console.log(`Connected to game ID: ${data.gameId} as ${$localStore.playerName}`);
 						break;
 					case MessageType.GAME_END:
@@ -106,30 +110,9 @@
 </script>
 
 <div class="background">
-	<div class="side">
+	<!-- <div class="side">
 		<input type="text" bind:value={fieldValue} />
 		<button on:click={sendMessage}>Send</button>
-		<br />
-		<!-- <button
-			on:click={() => {
-				gameStore.updateState(GameState.PLAYER_MOVE);
-			}}>PLAYER_MOVE</button
-		>
-		<button
-			on:click={() => {
-				gameStore.updateState(GameState.PLAYER_CONTINUE);
-			}}>PLAYER_CONTINUE</button
-		>
-		<button
-			on:click={() => {
-				gameStore.updateState(GameState.PLAYER_DUCK);
-			}}>PLAYER_DUCK</button
-		>
-		<button
-			on:click={() => {
-				gameStore.updateState(GameState.GAME_END);
-			}}>GAME_END</button
-		> -->
 		<br />
 		<h2 class="text">Choose colour:</h2>
 		<button
@@ -144,11 +127,6 @@
 				localStore.setPlayerPosition(PlayerPosition.TWO);
 			}}>BLACK</button
 		>
-
-		<!-- <p class="text">Game state: {$gameStore.state}</p>
-		<p class="text">Player Turn: {$gameStore.playerTurn}</p>
-		<p class="text">You: {$localStore.playerNumber}</p>
-		<p class="text">Selected: {JSON.stringify($localStore.selectedTile)}</p> -->
 		<h3 class="text">{$gameStore.playerTurn === 0 ? 'Red' : 'Black'}'s turn</h3>
 		{#if $gameStore.state === GameState.PLAYER_MOVE}
 			<h3 class="text">Move Chip</h3>
@@ -170,9 +148,24 @@
 				);
 			}}>Reset Game</button
 		>
-	</div>
+	</div> -->
 
-	<Board {socket} />
+	<div id="board-box">
+		<h2>{$gameStore.gameName ?? 'Missing Game Name'}</h2>
+		<div id="player-area">
+			<PlayerCard
+				name={$gameStore.players[1]?.playerName}
+				chipCount={$localStore.taken.black}
+				colour={'red'}
+			/>
+			<PlayerCard
+				name={$gameStore.players[2]?.playerName}
+				chipCount={$localStore.taken.red}
+				colour={'black'}
+			/>
+		</div>
+		<Board {socket} />
+	</div>
 </div>
 
 <style>
@@ -182,7 +175,19 @@
 
 	.background {
 		display: flex;
-		height: 80vh;
+		height: 90vh;
+	}
+
+	#board-box {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	#player-area {
+		width: 100%;
+		max-width: 700px;
+		margin: 0 auto;
 	}
 
 	.side {
