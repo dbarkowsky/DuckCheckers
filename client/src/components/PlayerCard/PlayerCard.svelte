@@ -1,6 +1,6 @@
 <script lang="ts">
   	export let colour: 'red' | 'black' = 'black';
-    export let name: string | undefined;
+    export let name: string | undefined = 'Waiting for Player';
     export let chipCount: number = 0;
 
     const black = '#262626';
@@ -13,7 +13,7 @@
 <div class="playerCount">
   <div style="--colour:{chipColour};" class="chip" />
   <div>
-    <p>{name ?? 'Waiting for Player'}</p>
+    <p>{name}</p>
     <div class="count-box">
       {#each {length: chipCount} as _}
         <div style="--smallChipColour:{smallChipColour}" class="chip small-chip" />
@@ -25,7 +25,7 @@
 <style>
   .playerCount {
 		height: 70px;
-		width: auto;
+		width: 200px;
 		display: flex;
     align-items: center;
 	}

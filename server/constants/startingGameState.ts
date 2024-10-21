@@ -1,12 +1,13 @@
 import { IOngoingGame } from "../interfaces/IOngoingGame";
+import { PlayerPosition } from "../interfaces/messages";
 
 export const startingState: IOngoingGame = {
   state: 0,
   created: new Date(),
   playerTurn: 0,
   players: {
+    0: undefined,
     1: undefined,
-    2: undefined,
   },
   gameName: '',
   observers: [],
@@ -22,7 +23,7 @@ export const startingState: IOngoingGame = {
         "x": 0,
         "y": 1,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -37,7 +38,7 @@ export const startingState: IOngoingGame = {
         "x": 0,
         "y": 3,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -52,7 +53,7 @@ export const startingState: IOngoingGame = {
         "x": 0,
         "y": 5,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -67,7 +68,7 @@ export const startingState: IOngoingGame = {
         "x": 0,
         "y": 7,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -79,7 +80,7 @@ export const startingState: IOngoingGame = {
         "x": 1,
         "y": 0,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -94,7 +95,7 @@ export const startingState: IOngoingGame = {
         "x": 1,
         "y": 2,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -109,7 +110,7 @@ export const startingState: IOngoingGame = {
         "x": 1,
         "y": 4,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -124,7 +125,7 @@ export const startingState: IOngoingGame = {
         "x": 1,
         "y": 6,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -146,7 +147,7 @@ export const startingState: IOngoingGame = {
         "x": 2,
         "y": 1,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -161,7 +162,7 @@ export const startingState: IOngoingGame = {
         "x": 2,
         "y": 3,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -176,7 +177,7 @@ export const startingState: IOngoingGame = {
         "x": 2,
         "y": 5,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -191,7 +192,7 @@ export const startingState: IOngoingGame = {
         "x": 2,
         "y": 7,
         "chip": {
-          "player": 1,
+          "player": PlayerPosition.TWO,
           "colour": "#262626",
           "isKinged": false
         }
@@ -287,7 +288,7 @@ export const startingState: IOngoingGame = {
         "x": 5,
         "y": 0,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -302,7 +303,7 @@ export const startingState: IOngoingGame = {
         "x": 5,
         "y": 2,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -317,7 +318,7 @@ export const startingState: IOngoingGame = {
         "x": 5,
         "y": 4,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -332,7 +333,7 @@ export const startingState: IOngoingGame = {
         "x": 5,
         "y": 6,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -354,7 +355,7 @@ export const startingState: IOngoingGame = {
         "x": 6,
         "y": 1,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -369,7 +370,7 @@ export const startingState: IOngoingGame = {
         "x": 6,
         "y": 3,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -384,7 +385,7 @@ export const startingState: IOngoingGame = {
         "x": 6,
         "y": 5,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -399,7 +400,7 @@ export const startingState: IOngoingGame = {
         "x": 6,
         "y": 7,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -411,7 +412,7 @@ export const startingState: IOngoingGame = {
         "x": 7,
         "y": 0,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -426,7 +427,7 @@ export const startingState: IOngoingGame = {
         "x": 7,
         "y": 2,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -441,7 +442,7 @@ export const startingState: IOngoingGame = {
         "x": 7,
         "y": 4,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }
@@ -456,7 +457,7 @@ export const startingState: IOngoingGame = {
         "x": 7,
         "y": 6,
         "chip": {
-          "player": 0,
+          "player": PlayerPosition.ONE,
           "colour": "#eb1e1e",
           "isKinged": false
         }

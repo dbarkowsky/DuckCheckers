@@ -13,8 +13,12 @@
 	export let socket: WebSocket;
 
 	$: highlighted =
-		$localStore.possibleMoves.find((value) => value.x === tile.x && value.y === tile.y) ||
+		$localStore.possibleMoves?.find((value) => value.x === tile.x && value.y === tile.y) ||
 		($localStore.isHovered?.x === tile.x && $localStore.isHovered?.y === tile.y);
+
+	$: hasForcedJump = $gameStore.forcedJumps?.find(
+		(value) => value.x === tile.x && value.y === tile.y
+	);
 
 	const isPossibleMove = () =>
 		!!$localStore.possibleMoves.find(
@@ -42,12 +46,22 @@
 
 	const clickHandler = () => {
 		if (isPlayersTurn()) {
+			console.log('click', $gameStore, $localStore);
+			const isThisPlayersChip = tile.chip && tile.chip.player === $localStore.playerPosition;
+			const isInForcedJumps = Boolean(
+				$gameStore.forcedJumps?.find((location) => location.x === tile.x && location.y === tile.y)
+			);
+			const restrictedByForcedJump = $gameStore.forcedJumps?.length ? !isInForcedJumps : false;
 			switch ($gameStore.state) {
 				case GameState.PLAYER_MOVE:
-					if (tile.chip && tile.chip.player === $localStore.playerPosition) {
+					if (isThisPlayersChip && !restrictedByForcedJump) {
 						localStore.setSelectedTile(tile);
 						// Decide which tiles can be moved to
-						localStore.setPossibleMoves(getPossibleMoves(tile));
+						if (isInForcedJumps) {
+							localStore.setPossibleMoves(getPossibleMoves(tile, true));
+						} else {
+							localStore.setPossibleMoves(getPossibleMoves(tile));
+						}
 					} else if ($localStore.selectedTile) {
 						if (isPossibleMove()) {
 							sendMove(tile);
@@ -57,12 +71,19 @@
 					break;
 				case GameState.PLAYER_CONTINUE:
 					// Selected tile here should be set by server
-					if ($localStore.selectedTile) {
+					if (isThisPlayersChip && !restrictedByForcedJump) {
+						console.log('setting selected tile');
+						localStore.setSelectedTile(tile);
+						// Decide which tiles can be moved to
+						localStore.setPossibleMoves(getPossibleMoves(tile, true));
+					} else if ($localStore.selectedTile) {
+						console.log('moving tile');
 						if (isPossibleMove()) {
 							sendMove(tile);
-							localStore.setSelectedTile(undefined);
 						}
+						localStore.setSelectedTile(undefined);
 					}
+
 					break;
 				case GameState.PLAYER_DUCK:
 					// No chip is already here
@@ -90,6 +111,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div
 	class:highlighted
+	class:hasForcedJump
 	class={tile.isRed ? 'red' : 'black'}
 	on:click={clickHandler}
 	on:mouseenter={() => {
@@ -123,7 +145,7 @@
 	{/if}
 </div>
 
-<style>
+<style lang="scss">
 	.red {
 		background-color: rgb(255, 103, 103);
 	}
@@ -143,6 +165,16 @@
 
 	.highlighted {
 		background-color: yellow;
+	}
+
+	.hasForcedJump {
+		animation: flashing 2s infinite linear;
+	}
+
+	@keyframes flashing {
+		50% {
+			background-color: yellow;
+		}
 	}
 
 	.crown {

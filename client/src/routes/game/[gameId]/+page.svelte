@@ -7,10 +7,12 @@
 		type BaseMessage,
 		type GameStateMessage,
 		type BoardStateMessage,
-		type SelectedTileMessage,
 		type ArrivalMessage,
 		type ArrivalResponse,
-		type CommunicationMessage
+		type CommunicationMessage,
+
+		type PlayerDataMessage
+
 	} from '$lib/messages';
 	import localStore, { PlayerPosition } from '../../../stores/localStore';
 	import getPossibleMoves from '$lib/getPossibleMoves';
@@ -64,28 +66,40 @@
 						const gameData = message as GameStateMessage;
 						gameStore.updateState(gameData.state);
 						gameStore.updateTurn(gameData.playerTurn);
+            gameStore.updateForcedJumps(gameData.forcedJumps);
 						break;
 					case MessageType.BOARD_STATE:
 						const boardData = message as BoardStateMessage;
 						gameStore.updateTiles(boardData.tiles);
 						localStore.updateTaken(boardData.tiles);
 						break;
-					case MessageType.SELECTED_TILE:
-						const selectedData = message as SelectedTileMessage;
-						gameStore.updateState(GameState.PLAYER_CONTINUE);
-						localStore.setSelectedTile(selectedData.tile);
-						localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
+					// case MessageType.SELECTED_TILE:
+					// 	const selectedData = message as SelectedTileMessage;
+					// 	gameStore.updateState(GameState.PLAYER_CONTINUE);
+					// 	localStore.setSelectedTile(selectedData.tile);
+					// 	localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
 					case MessageType.ARRIVAL_RESPONSE:
 						const arrivalData = message as ArrivalResponse;
 						gameStore.updateState(arrivalData.state);
 						gameStore.updateTurn(arrivalData.playerTurn);
 						gameStore.updateTiles(arrivalData.tiles);
 						gameStore.updatePlayers(arrivalData.players);
+            gameStore.updateForcedJumps(arrivalData.forcedJumps);
 						localStore.setPlayerPosition(arrivalData.playerPosition);
 						localStore.updateTaken(arrivalData.tiles);
 						console.log(`Connected to game ID: ${data.gameId} as ${$localStore.playerName}`);
 						break;
 					case MessageType.GAME_END:
+						// TODO: Fill this in
+            console.log('Game Over', message);
+						break;
+					case MessageType.FORFEIT:
+						// TODO: fill this in
+            console.log('Forfeit', message);
+						break;
+					case MessageType.PLAYERS_UPDATE:
+					const playerData = message as PlayerDataMessage;
+						gameStore.updatePlayers(playerData.players)
 						break;
 					default:
 						break;
@@ -110,7 +124,7 @@
 </script>
 
 <div class="background">
-	<!-- <div class="side">
+	<div class="side">
 		<input type="text" bind:value={fieldValue} />
 		<button on:click={sendMessage}>Send</button>
 		<br />
@@ -138,6 +152,7 @@
 			<h3 class="text">Place Duck</h3>
 		{/if}
 		<br />
+    <p>{$gameStore.forcedJumps}</p>
 		<button
 			style="margin-top: 2em;"
 			on:click={() => {
@@ -148,19 +163,19 @@
 				);
 			}}>Reset Game</button
 		>
-	</div> -->
+	</div>
 
 	<div id="board-box">
 		<h2>{$gameStore.gameName ?? 'Missing Game Name'}</h2>
 		<div id="player-area">
 			<PlayerCard
-				name={$gameStore.players[1]?.playerName}
-				chipCount={$localStore.taken.black}
+				name={$gameStore?.players[PlayerPosition.ONE]?.playerName}
+				chipCount={$localStore.taken[PlayerPosition.TWO]}
 				colour={'red'}
 			/>
 			<PlayerCard
-				name={$gameStore.players[2]?.playerName}
-				chipCount={$localStore.taken.red}
+				name={$gameStore?.players[PlayerPosition.TWO]?.playerName}
+				chipCount={$localStore.taken[PlayerPosition.ONE]}
 				colour={'black'}
 			/>
 		</div>
@@ -188,6 +203,8 @@
 		width: 100%;
 		max-width: 700px;
 		margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
 	}
 
 	.side {

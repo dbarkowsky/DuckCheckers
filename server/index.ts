@@ -1,10 +1,10 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
-import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerPosition, SelectedTileMessage } from './interfaces/messages.ts'
+import { ArrivalMessage, ArrivalResponse, BaseMessage, BoardStateMessage, CommunicationMessage, DuckMessage, GameState, GameStateMessage, IChip, ITile, MessageType, MoveRequestMessage, PlayerDataMessage, PlayerPosition } from './interfaces/messages.ts'
 import db from "./db/conn";
 import { ObjectId } from "mongodb";
-import { IOngoingGame } from "./interfaces/IOngoingGame";
+import { IOngoingGame, Location } from "./interfaces/IOngoingGame";
 import { startingState } from "./constants/startingGameState";
 import { v4 } from 'uuid';
 
@@ -16,7 +16,7 @@ const ongoingGames = db.collection<IOngoingGame>('ongoingGames');
 
 const BOARD_SIZE = 8;
 
-const getPossibleJumps = (tile: ITile, tiles: ITile[][]) => {
+const getPossibleJumps = (tile: ITile, tiles: ITile[][]): Location[] => {
   const tileExists = (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
   const tileHasOpponentChip = (x: number, y: number, movingTile: ITile) => tiles[x][y].chip && tiles[x][y].chip?.player !== movingTile.chip?.player && tiles[x][y].chip?.player !== PlayerPosition.DUCK;
   const tileHasChip = (x: number, y: number) => tiles[x][y].chip && tiles[x][y].chip !== null;
@@ -71,20 +71,24 @@ export interface DuckSocket extends WebSocket {
 }
 
 const removeUserFromGame = async (uuid: string, gameId: ObjectId) => {
-  const existingGame = gameId ? await ongoingGames.findOne({ _id: gameId}) : '';
-    if (existingGame) {
-      // Remove matching observers
-      if (existingGame.observers.length) {
-        const observerIndex = existingGame.observers.findIndex((socket: DuckSocket) => socket.uuid === uuid);
-        if (observerIndex >= 0) existingGame.observers.splice(observerIndex, 1);
-      }
-      // Remove player from 1 or 2 position
-      if (existingGame.players[1]?.uuid === uuid) existingGame.players[1] = undefined;
-      if (existingGame.players[2]?.uuid === uuid) existingGame.players[2] = undefined;
-      await ongoingGames.updateOne({ _id: gameId}, {
-        $set: existingGame
-      })
+  const existingGame = gameId ? await ongoingGames.findOne({ _id: gameId }) : '';
+  if (existingGame) {
+    // Remove matching observers
+    if (existingGame.observers.length) {
+      const observerIndex = existingGame.observers.findIndex((socket: DuckSocket) => socket.uuid === uuid);
+      if (observerIndex >= 0) existingGame.observers.splice(observerIndex, 1);
     }
+    // Remove player from 1 or 2 position
+    if (existingGame.players[PlayerPosition.ONE]?.uuid === uuid) existingGame.players[PlayerPosition.ONE] = undefined;
+    if (existingGame.players[PlayerPosition.TWO]?.uuid === uuid) existingGame.players[PlayerPosition.TWO] = undefined;
+    await ongoingGames.updateOne({ _id: gameId }, {
+      $set: existingGame
+    })
+    return {
+      players: existingGame.players,
+      observers: existingGame.observers,
+    }
+  }
 }
 
 // Websocket Mock Server
@@ -94,12 +98,24 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
   const gameId = new ObjectId(requestParams?.at(0));
   socket.gameId = gameId.toString();
   socket.uuid = v4();
-  // TODO: When user is removed, send user updates to clients
-  socket.addEventListener('close', async () => {await removeUserFromGame(socket.uuid, gameId)})
+  // When user is removed, send user updates to clients
+  socket.addEventListener('close', async () => {
+    const updatedPlayersObservers = await removeUserFromGame(socket.uuid, gameId);
+    const playersUpdateMessage: PlayerDataMessage = {
+      gameId,
+      type: MessageType.PLAYERS_UPDATE,
+      players: {
+        1: updatedPlayersObservers?.players[PlayerPosition.ONE],
+        2: updatedPlayersObservers?.players[PlayerPosition.TWO],
+      },
+      observers: updatedPlayersObservers?.observers,
+    }
+    sendToEveryone(JSON.stringify(playersUpdateMessage), gameId.toString());
+  })
   socket.addEventListener('message', async (e: MessageEvent) => {
     // What to do with incomming message?
-    const message: BaseMessage = JSON.parse(e.data.toString());   
-    const findById = { _id: gameId}
+    const message: BaseMessage = JSON.parse(e.data.toString());
+    const findById = { _id: gameId }
     const existingGame = gameId ? await ongoingGames.findOne(findById) : '';  // Get game from database
     if (existingGame) {
       switch (message.type) {
@@ -160,6 +176,17 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
           // Update state and player turn
           existingGame.state = GameState.PLAYER_MOVE;
           existingGame.playerTurn = existingGame.playerTurn === PlayerPosition.ONE ? PlayerPosition.TWO : PlayerPosition.ONE
+          // Deterimine if other player now has mandatory jumps
+          const forcedJumps: Location[] = [];
+          // Detect and add possible forced jumps
+          existingGame.tiles.forEach(row => {
+            row.forEach(tile => {
+              if (tile.chip?.player === existingGame.playerTurn && getPossibleJumps(tile, existingGame.tiles).length > 0) {
+                forcedJumps.push({ x: tile.x, y: tile.y });
+              }
+            })
+          })
+          existingGame.forcedJumps = forcedJumps;
           // Update database
           await ongoingGames.updateOne(findById, {
             $set: existingGame
@@ -171,11 +198,13 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
             gameId,
           }
           sendToEveryone(JSON.stringify(duckResponse), gameId.toString());
+
           // Return new game state
           const gameState: GameStateMessage = {
             type: MessageType.GAME_STATE,
             state: existingGame.state,
             playerTurn: existingGame.playerTurn,
+            forcedJumps: existingGame.forcedJumps,
             gameId,
           }
           sendToEveryone(JSON.stringify(gameState), gameId.toString());
@@ -212,26 +241,52 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
           // Should that chip continue?
           const tileThatMoved = existingGame.tiles[moveRequest.to.x][moveRequest.to.y];
           const possibleMoves = getPossibleJumps(tileThatMoved, existingGame.tiles);
-          if (pieceJumped && possibleMoves.length > 0) {
-            // Update database
-            existingGame.state = GameState.PLAYER_CONTINUE;
-            await ongoingGames.updateOne(findById, {
-              $set: existingGame
-            })
-            // Send info for force-selected tile
-            const selectedState: SelectedTileMessage = {
-              type: MessageType.SELECTED_TILE,
-              tile: tileThatMoved,
+
+          // Did anyone win this time? There should be 0 of one player's chips.
+          const tiles = existingGame.tiles.flat(1);
+          const redCount = tiles.reduce((acc, cur) => {
+            if (cur.chip?.player === PlayerPosition.ONE) return acc + 1;
+            else return acc;
+          }, 0);
+          const blackCount = tiles.reduce((acc, cur) => {
+            if (cur.chip?.player === PlayerPosition.TWO) return acc + 1;
+            else return acc;
+          }, 0)
+          console.log(pieceJumped, possibleMoves);
+          // Win condition met
+          if (redCount === 0 || blackCount === 0) {
+            existingGame.state = GameState.GAME_END;
+            existingGame.winner = redCount === 0 ? PlayerPosition.TWO : PlayerPosition.ONE;
+            // Send updated the state of the game
+            const newGameState: GameStateMessage = {
+              type: MessageType.GAME_STATE,
+              state: existingGame.state,
+              playerTurn: existingGame.playerTurn,
+              winner: existingGame.winner,
+              forcedJumps: [],
               gameId,
             }
-            socket.send(JSON.stringify(selectedState));
+            sendToEveryone(JSON.stringify(newGameState), gameId.toString());
+          } else if (pieceJumped && possibleMoves.length > 0) {
+            console.log('continue jumping', moveRequest)
+            // Chip should continue jumping
+            existingGame.state = GameState.PLAYER_CONTINUE;
+            // Saying that 
+            existingGame.forcedJumps = [{
+              x: moveRequest.to.x,
+              y: moveRequest.to.y,
+            }];
+            await ongoingGames.updateOne(findById, {
+              $set: existingGame
+            });
             // Return new game state
             const gameState: GameStateMessage = {
               type: MessageType.GAME_STATE,
               state: existingGame.state,
               playerTurn: existingGame.playerTurn,
+              forcedJumps: existingGame.forcedJumps,
               gameId,
-            }
+            };
             sendToEveryone(JSON.stringify(gameState), gameId.toString());
           } else {
             // Update state and database
@@ -244,6 +299,7 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
               type: MessageType.GAME_STATE,
               state: existingGame.state,
               playerTurn: existingGame.playerTurn,
+              forcedJumps: [],
               gameId,
             };
             sendToEveryone(JSON.stringify(nextState), gameId.toString());
@@ -270,42 +326,52 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
             playerTurn: existingGame.playerTurn,
             gameName: existingGame.gameName,
             players: existingGame.players,
+            forcedJumps: existingGame.forcedJumps,
           } as Partial<ArrivalResponse>;
-            // Attach their name
-            socket.playerName = arrivalData.playerName;
-            // If they want to be a player
-            if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
-              // Check if existing player positions are full
-              if (existingGame.players[1] && existingGame.players[2]) {
-                // Too bad, assign them as a spectator
-                // FIXME: Don't do this if they are already observers
-                existingGame.observers.push(socket)
-                returnData.playerPosition = PlayerPosition.OBSERVER;
-              } else {
-                // Add them as a player
-                if (arrivalData.desiredPosition === PlayerPosition.ONE) {
-                  existingGame.players[1] = socket;
-                  returnData.playerPosition = PlayerPosition.ONE;
-                } else {
-                  existingGame.players[2] = socket;
-                  returnData.playerPosition = PlayerPosition.TWO;
-                }
-              }
+          // Attach their name
+          socket.playerName = arrivalData.playerName;
+          // If they want to be a player
+          if ([PlayerPosition.ONE, PlayerPosition.TWO].includes(arrivalData.desiredPosition)) {
+            // Check if existing player positions are full
+            if (existingGame.players[PlayerPosition.ONE] && existingGame.players[PlayerPosition.TWO]) {
+              // Too bad, assign them as a spectator
+              // FIXME: Don't do this if they are already observers
+              existingGame.observers.push(socket)
+              returnData.playerPosition = PlayerPosition.OBSERVER;
             } else {
-              // Add them as a spectator
-              // FIXME: Don't do this if they are already spectators
+              // Add them as a player
+              if (arrivalData.desiredPosition === PlayerPosition.ONE) {
+                existingGame.players[PlayerPosition.ONE] = socket;
+                returnData.playerPosition = PlayerPosition.ONE;
+              } else {
+                existingGame.players[PlayerPosition.TWO] = socket;
+                returnData.playerPosition = PlayerPosition.TWO;
+              }
+            }
+          } else {
+            // Add them as a spectator
+            // Don't do this if they are already spectators
+            if (!existingGame.observers.some(observer => observer.playerName !== socket.playerName)) {
               existingGame.observers.push(socket)
               returnData.playerPosition = PlayerPosition.OBSERVER;
             }
+          }
           // }
-          
+
           // Save the state of the existing game
           await ongoingGames.updateOne(findById, {
             $set: existingGame
           })
           // In either case, return current game and board state
           socket.send(JSON.stringify(returnData));
-          // TODO: Send player update to clients
+          // Send player update to clients
+          const playersUpdateMessage: PlayerDataMessage = {
+            gameId,
+            type: MessageType.PLAYERS_UPDATE,
+            players: existingGame.players,
+            observers: existingGame.observers,
+          }
+          sendToEveryone(JSON.stringify(playersUpdateMessage), gameId.toString());
           break;
         default:
           break;

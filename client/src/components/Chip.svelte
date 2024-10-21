@@ -12,6 +12,7 @@
 		position: relative;
 		background-color: var(--colour);
 		border-radius: 50%;
+    border: 1px yellow solid;
 		display: flex;
 		justify-content: center;
 		align-items: center;

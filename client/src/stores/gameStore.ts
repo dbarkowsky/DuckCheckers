@@ -1,5 +1,6 @@
 import { get, writable } from 'svelte/store';
 import { PlayerPosition } from './localStore';
+import type { Location } from '$lib/messages';
 
 export enum GameState {
 	PLAYER_MOVE,
@@ -20,6 +21,8 @@ export interface IGame {
 	playerTurn: PlayerPosition;
 	tiles: ITile[][];
 	gameName: string;
+  winner?: PlayerPosition;
+  forcedJumps?: Location[];
 	// TODO: Not all of these are actually optional when received...
 	_id?: string;
 	created?: Date;
@@ -115,6 +118,7 @@ const createGame = () => {
 		playerTurn: PlayerPosition.ONE,
 		tiles: makeDefaultTiles(),
 		gameName: '',
+    forcedJumps: [],
 	};
 
 	const { subscribe, set, update } = writable<IGame>(temporaryGameState);
@@ -146,10 +150,15 @@ const createGame = () => {
 				...original,
 				playerTurn: newTurn
 			})),
-		updatePlayers: (players: Record<number, DuckSocket | undefined>) => update((original) => ({
+		updatePlayers: (players: Record<number, DuckSocket | undefined>, observers?: DuckSocket[]) => update((original) => ({
 			...original,
-			players: players,
-		}))
+			players,
+			observers,
+		})),
+    updateForcedJumps: (forcedJumps?: Location[]) => update((original) => ({
+      ...original,
+      forcedJumps: forcedJumps ?? [],
+    }))
 	};
 };
 

@@ -17,10 +17,7 @@ export interface ILocal {
 	selectedTile?: ITile;
 	playerName: string;
 	playerPosition: PlayerPosition;
-	taken: {
-		'red': number;
-		'black': number;
-	}
+	taken: Record<number, number>;
 }
 
 const createDefaultLocal = () =>
@@ -29,21 +26,19 @@ const createDefaultLocal = () =>
 		playerPosition: PlayerPosition.OBSERVER,
 		playerName: '',
 		taken: {
-			'red': 0,
-			'black': 0,
+			1: 0,
+			2: 0,
 		}
 	}) as ILocal;
 
 	const startingChips = 12;
-	const countChips = (colour: 'red' | 'black', tiles: ITile[][]) => {
+	const countChips = (player: PlayerPosition, tiles: ITile[][]) => {
 		if (!tiles) return startingChips;
 		let count = 0;
 		const localTiles = tiles.flat(1);
-		const red = '#eb1e1e';
-		const black = '#262626';
 		localTiles.forEach((tile) => {
-			if (tile.chip?.colour === red && colour === 'red') count++;
-			if (tile.chip?.colour === black && colour === 'black') count++;
+			if (tile.chip?.player === PlayerPosition.ONE && player === PlayerPosition.ONE) count++;
+			if (tile.chip?.player === PlayerPosition.TWO && player === PlayerPosition.TWO) count++;
 		});
 		return count;
 	};
@@ -88,8 +83,8 @@ const createLocal = () => {
 			})),
 		updateTaken: (tiles: ITile[][]) => {
 			const taken = get(localStore).taken;
-			taken['red'] = startingChips - countChips('red', tiles);
-			taken['black'] = startingChips - countChips('black', tiles);
+			taken[PlayerPosition.ONE] = startingChips - countChips(PlayerPosition.ONE, tiles);
+			taken[PlayerPosition.TWO] = startingChips - countChips(PlayerPosition.TWO, tiles);
 			update((original) => ({
 				...original,
 				taken: taken,

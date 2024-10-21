@@ -11,7 +11,9 @@ export enum MessageType {
 	DUCK_PLACEMENT,
 	ARRIVAL_ANNOUNCEMENT,
 	ARRIVAL_RESPONSE,
-	RESET
+	RESET,
+	FORFEIT,
+	PLAYERS_UPDATE,
 }
 
 export interface BaseMessage {
@@ -32,6 +34,7 @@ export interface ArrivalResponse extends BaseMessage {
 	state: GameState;
 	tiles: ITile[][];
 	players: Record<number, DuckSocket | undefined>;
+  forcedJumps?: Location[];
 }
 
 export interface CommunicationMessage extends BaseMessage {
@@ -45,6 +48,8 @@ export interface GameStateMessage extends BaseMessage {
 	type: MessageType.GAME_STATE;
 	state: GameState;
 	playerTurn: PlayerPosition;
+  winner?: PlayerPosition;
+  forcedJumps?: Location[];
 }
 
 export interface BoardStateMessage extends BaseMessage {
@@ -64,12 +69,23 @@ export interface MoveRequestMessage extends BaseMessage {
 	to: ITile;
 }
 
-export interface SelectedTileMessage extends BaseMessage {
-	type: MessageType.SELECTED_TILE;
-	tile: ITile;
-}
+// export interface SelectedTileMessage extends BaseMessage {
+// 	type: MessageType.SELECTED_TILE;
+// 	tile: ITile;
+// }
 
 export interface DuckMessage extends BaseMessage {
 	type: MessageType.DUCK_PLACEMENT;
 	tile: ITile;
+}
+
+export interface PlayerDataMessage extends BaseMessage {
+	type: MessageType.PLAYERS_UPDATE;
+	players: Record<number, DuckSocket | undefined>;
+	observers?: DuckSocket[];
+}
+
+export interface Location {
+  x: number;
+  y: number;
 }

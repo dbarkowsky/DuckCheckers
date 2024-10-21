@@ -7,7 +7,7 @@ use('duck-db');
 // Create a new document in the collection.
 db.getCollection('ongoingGames').insertOne({
   "_id": {
-    "$oid": "123"
+    "$oid": "222"
   },
   "players": {
     "1": null,
@@ -29,7 +29,7 @@ db.getCollection('ongoingGames').insertOne({
         "chip": {
           "player": 1,
           "colour": "#262626",
-          "isKinged": false
+          "isKinged": true
         }
       },
       {
@@ -41,11 +41,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 0,
         "y": 3,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -56,11 +51,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 0,
         "y": 5,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -71,11 +61,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 0,
         "y": 7,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       }
     ],
     [
@@ -83,11 +68,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 1,
         "y": 0,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -99,9 +79,9 @@ db.getCollection('ongoingGames').insertOne({
         "x": 1,
         "y": 2,
         "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
+          "player": 0,
+          "colour": "#eb1e1e",
+          "isKinged": true
         }
       },
       {
@@ -113,11 +93,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 1,
         "y": 4,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -128,11 +103,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 1,
         "y": 6,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -150,11 +120,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 2,
         "y": 1,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -165,11 +130,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 2,
         "y": 3,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -180,11 +140,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 2,
         "y": 5,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -195,11 +150,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 2,
         "y": 7,
-        "chip": {
-          "player": 1,
-          "colour": "#262626",
-          "isKinged": false
-        }
       }
     ],
     [
@@ -291,11 +241,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 5,
         "y": 0,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -306,11 +251,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 5,
         "y": 2,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -321,11 +261,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 5,
         "y": 4,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -336,11 +271,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 5,
         "y": 6,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -358,11 +288,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 6,
         "y": 1,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -373,11 +298,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 6,
         "y": 3,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -388,11 +308,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 6,
         "y": 5,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -403,11 +318,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 6,
         "y": 7,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       }
     ],
     [
@@ -415,11 +325,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 7,
         "y": 0,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -430,11 +335,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 7,
         "y": 2,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -445,11 +345,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 7,
         "y": 4,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,
@@ -460,11 +355,6 @@ db.getCollection('ongoingGames').insertOne({
         "isRed": false,
         "x": 7,
         "y": 6,
-        "chip": {
-          "player": 0,
-          "colour": "#eb1e1e",
-          "isKinged": false
-        }
       },
       {
         "isRed": true,

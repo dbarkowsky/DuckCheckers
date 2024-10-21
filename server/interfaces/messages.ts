@@ -1,5 +1,6 @@
 import { Condition, ObjectId } from "mongodb";
 import { DuckSocket } from "..";
+import { Location } from "./IOngoingGame";
 
 export enum GameState {
   PLAYER_MOVE,
@@ -50,6 +51,8 @@ export enum MessageType {
   ARRIVAL_ANNOUNCEMENT,
   ARRIVAL_RESPONSE,
   RESET,
+  FORFEIT,
+  PLAYERS_UPDATE,
  }
  
  export interface BaseMessage {
@@ -70,7 +73,8 @@ export interface ArrivalResponse extends BaseMessage {
   state: GameState;
   tiles: ITile[][];
   gameName: string;
-  players: Record<number, DuckSocket | undefined> 
+  players: Record<number, DuckSocket | undefined>
+  forcedJumps?: Location[];
 }
  
  export interface CommunicationMessage extends BaseMessage {
@@ -84,6 +88,8 @@ export interface ArrivalResponse extends BaseMessage {
    type: MessageType.GAME_STATE;
    state: GameState;
    playerTurn: PlayerPosition;
+   winner?: PlayerPosition;
+   forcedJumps?: Location[];
  }
  
  export interface BoardStateMessage extends BaseMessage {
@@ -112,4 +118,8 @@ export interface DuckMessage extends BaseMessage {
   tile: ITile;
 }
 
- 
+export interface PlayerDataMessage extends BaseMessage {
+	type: MessageType.PLAYERS_UPDATE;
+	players: Record<number, DuckSocket | undefined>;
+  observers?: DuckSocket[];
+}

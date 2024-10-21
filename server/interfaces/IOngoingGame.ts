@@ -9,4 +9,11 @@ export interface IOngoingGame {
   state: GameState;
   playerTurn: PlayerPosition;
   gameName: string;
+  winner?: PlayerPosition;
+  forcedJumps?: Location[];
+}
+
+export interface Location {
+  x: number;
+  y: number;
 }
