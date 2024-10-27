@@ -36,12 +36,14 @@
 		border-radius: 50%;
 		height: 50px;
 		width: 50px;
+    min-width: 50px;
     margin-right: 1em;
     border: solid 1px white;
 	}
   .small-chip {
       height: 10px;
       width: 10px;
+      min-width: 10px;
       margin-right: 1px;
       background-color: var(--smallChipColour);
     }
