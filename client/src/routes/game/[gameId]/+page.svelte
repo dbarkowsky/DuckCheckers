@@ -67,17 +67,15 @@
 						gameStore.updateState(gameData.state);
 						gameStore.updateTurn(gameData.playerTurn);
             gameStore.updateForcedJumps(gameData.forcedJumps);
+            if (gameData.winner) {
+              gameStore.setWinner(gameData.winner, gameData.winReason);
+            }
 						break;
 					case MessageType.BOARD_STATE:
 						const boardData = message as BoardStateMessage;
 						gameStore.updateTiles(boardData.tiles);
 						localStore.updateTaken(boardData.tiles);
 						break;
-					// case MessageType.SELECTED_TILE:
-					// 	const selectedData = message as SelectedTileMessage;
-					// 	gameStore.updateState(GameState.PLAYER_CONTINUE);
-					// 	localStore.setSelectedTile(selectedData.tile);
-					// 	localStore.setPossibleMoves(getPossibleMoves(selectedData.tile, true));
 					case MessageType.ARRIVAL_RESPONSE:
 						const arrivalData = message as ArrivalResponse;
 						gameStore.updateState(arrivalData.state);
@@ -88,14 +86,6 @@
 						localStore.setPlayerPosition(arrivalData.playerPosition);
 						localStore.updateTaken(arrivalData.tiles);
 						console.log(`Connected to game ID: ${data.gameId} as ${$localStore.playerName}`);
-						break;
-					case MessageType.GAME_END:
-						// TODO: Fill this in
-            console.log('Game Over', message);
-						break;
-					case MessageType.FORFEIT:
-						// TODO: fill this in
-            console.log('Forfeit', message);
 						break;
 					case MessageType.PLAYERS_UPDATE:
 					const playerData = message as PlayerDataMessage;

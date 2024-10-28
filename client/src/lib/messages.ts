@@ -2,18 +2,17 @@ import type { DuckSocket, GameState, ITile } from '../stores/gameStore';
 import type { PlayerPosition } from '../stores/localStore';
 
 export enum MessageType {
-	COMMUNICATION,
-	GAME_STATE,
-	BOARD_STATE,
-	GAME_END,
-	MOVE_REQUEST,
-	SELECTED_TILE,
-	DUCK_PLACEMENT,
-	ARRIVAL_ANNOUNCEMENT,
-	ARRIVAL_RESPONSE,
-	RESET,
-	FORFEIT,
-	PLAYERS_UPDATE,
+  COMMUNICATION = 0,
+  GAME_STATE = 1,
+  BOARD_STATE = 2,
+  MOVE_REQUEST = 4,
+  SELECTED_TILE = 5,
+  DUCK_PLACEMENT = 6,
+  ARRIVAL_ANNOUNCEMENT = 7,
+  ARRIVAL_RESPONSE = 8,
+  RESET = 9,
+  FORFEIT = 10,
+  PLAYERS_UPDATE = 11,
 }
 
 export interface BaseMessage {
@@ -49,6 +48,7 @@ export interface GameStateMessage extends BaseMessage {
 	state: GameState;
 	playerTurn: PlayerPosition;
   winner?: PlayerPosition;
+  winReason?: string;
   forcedJumps?: Location[];
 }
 
@@ -57,22 +57,11 @@ export interface BoardStateMessage extends BaseMessage {
 	tiles: ITile[][];
 }
 
-export interface GameEndMessage extends BaseMessage {
-	type: MessageType.GAME_END;
-	winner: string;
-	state: GameState.GAME_END;
-}
-
 export interface MoveRequestMessage extends BaseMessage {
 	type: MessageType.MOVE_REQUEST;
 	from: ITile;
 	to: ITile;
 }
-
-// export interface SelectedTileMessage extends BaseMessage {
-// 	type: MessageType.SELECTED_TILE;
-// 	tile: ITile;
-// }
 
 export interface DuckMessage extends BaseMessage {
 	type: MessageType.DUCK_PLACEMENT;

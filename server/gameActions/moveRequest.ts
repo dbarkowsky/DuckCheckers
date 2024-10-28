@@ -116,4 +116,9 @@ export const moveRequest = async (props: GameActionProps) => {
     gameId,
   }
   sendToEveryone(JSON.stringify(boardState), gameId.toString());
+
+  // Game could end in this. Delete the game if true;
+  if (existingGame.state === GameState.GAME_END) {
+    ongoingGames.deleteOne(findById);
+  }
 }

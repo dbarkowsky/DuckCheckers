@@ -22,8 +22,9 @@ export interface IGame {
 	tiles: ITile[][];
 	gameName: string;
   winner?: PlayerPosition;
+  winReason?: string;
   forcedJumps?: Location[];
-	// TODO: Not all of these are actually optional when received...
+	// Not all of these are actually optional when received...
 	_id?: string;
 	created?: Date;
 	observers?: DuckSocket[];
@@ -158,6 +159,11 @@ const createGame = () => {
     updateForcedJumps: (forcedJumps?: Location[]) => update((original) => ({
       ...original,
       forcedJumps: forcedJumps ?? [],
+    })),
+    setWinner: (winner: PlayerPosition, reason?: string) => update((original) => ({
+      ...original,
+      winner,
+      winReason: reason ?? 'Great game!',
     }))
 	};
 };
