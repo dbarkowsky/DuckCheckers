@@ -3,7 +3,7 @@ import { ITile, PlayerPosition } from "../interfaces/messages";
 
 const BOARD_SIZE = 8;
 
-export const getPossibleJumps = (tile: ITile, tiles: ITile[][]): Location[] => {
+export const getPossibleMoves = (tile: ITile, tiles: ITile[][], onlyJumps: boolean = false): Location[] => {
   const tileExists = (x: number, y: number) => x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE;
   const tileHasOpponentChip = (x: number, y: number, movingTile: ITile) => tiles[x][y].chip && tiles[x][y].chip?.player !== movingTile.chip?.player && tiles[x][y].chip?.player !== PlayerPosition.DUCK;
   const tileHasChip = (x: number, y: number) => tiles[x][y].chip && tiles[x][y].chip !== null;
@@ -41,5 +41,5 @@ export const getPossibleJumps = (tile: ITile, tiles: ITile[][]): Location[] => {
       return true;
     })
     // filter out non-jumps (adjacent spaces)
-    .filter(coord => Math.abs(tile.x - coord.x) !== 1);
+    .filter((coord) => (onlyJumps ? Math.abs(tile.x - coord.x) !== 1 : true))
 }

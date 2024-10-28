@@ -3,7 +3,7 @@ import db from "../db/conn";
 import { GameActionProps } from "../interfaces/GameActionProps";
 import { IOngoingGame } from "../interfaces/IOngoingGame";
 import { MoveRequestMessage, PlayerPosition, GameState, GameStateMessage, MessageType, BoardStateMessage } from "../interfaces/messages";
-import { getPossibleJumps } from "./getPossibleJumps";
+import { getPossibleMoves } from "./getPossibleJumps";
 
 const ongoingGames = db.collection<IOngoingGame>('ongoingGames');
 
@@ -40,7 +40,7 @@ export const moveRequest = async (props: GameActionProps) => {
 
   // Should that chip continue?
   const tileThatMoved = existingGame.tiles[moveRequest.to.x][moveRequest.to.y];
-  const possibleMoves = getPossibleJumps(tileThatMoved, existingGame.tiles);
+  const possibleMoves = getPossibleMoves(tileThatMoved, existingGame.tiles);
 
   // Did anyone win this time? There should be 0 of one player's chips.
   const tiles = existingGame.tiles.flat(1);
@@ -57,12 +57,14 @@ export const moveRequest = async (props: GameActionProps) => {
   if (redCount === 0 || blackCount === 0) {
     existingGame.state = GameState.GAME_END;
     existingGame.winner = redCount === 0 ? PlayerPosition.TWO : PlayerPosition.ONE;
+    existingGame.winReason = 'Opponent Defeated';
     // Send updated the state of the game
     const newGameState: GameStateMessage = {
       type: MessageType.GAME_STATE,
       state: existingGame.state,
       playerTurn: existingGame.playerTurn,
       winner: existingGame.winner,
+      winReason: existingGame.winReason,
       forcedJumps: [],
       gameId,
     }

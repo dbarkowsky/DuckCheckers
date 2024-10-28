@@ -89,17 +89,13 @@ export interface ArrivalResponse extends BaseMessage {
    state: GameState;
    playerTurn: PlayerPosition;
    winner?: PlayerPosition;
+   winReason?: string;
    forcedJumps?: Location[];
  }
  
  export interface BoardStateMessage extends BaseMessage {
    type: MessageType.BOARD_STATE;
    tiles: ITile[][];
- }
- 
- export interface GameEndMessage extends BaseMessage {
-   type: MessageType.GAME_END;
-   winner: string;
  }
  
  export interface MoveRequestMessage extends BaseMessage {
@@ -122,4 +118,8 @@ export interface PlayerDataMessage extends BaseMessage {
 	type: MessageType.PLAYERS_UPDATE;
 	players: Record<number, DuckSocket | undefined>;
   observers?: DuckSocket[];
+}
+
+export interface ForfeitMessage extends BaseMessage {
+  requestor: PlayerPosition;
 }

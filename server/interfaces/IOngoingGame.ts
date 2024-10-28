@@ -10,6 +10,7 @@ export interface IOngoingGame {
   playerTurn: PlayerPosition;
   gameName: string;
   winner?: PlayerPosition;
+  winReason?: string;
   forcedJumps?: Location[];
 }
 

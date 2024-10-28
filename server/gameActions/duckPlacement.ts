@@ -3,7 +3,7 @@ import db from "../db/conn";
 import { GameActionProps } from "../interfaces/GameActionProps";
 import { IOngoingGame, Location } from "../interfaces/IOngoingGame";
 import { DuckMessage, GameState, PlayerPosition, BoardStateMessage, MessageType, GameStateMessage, IChip } from "../interfaces/messages";
-import { getPossibleJumps } from "./getPossibleJumps";
+import { getPossibleMoves } from "./getPossibleJumps";
 
 const ongoingGames = db.collection<IOngoingGame>('ongoingGames');
 
@@ -52,15 +52,27 @@ export const duckPlacement = async (props: GameActionProps) => {
   existingGame.playerTurn = existingGame.playerTurn === PlayerPosition.ONE ? PlayerPosition.TWO : PlayerPosition.ONE
   // Deterimine if other player now has mandatory jumps
   const forcedJumps: Location[] = [];
-  // Detect and add possible forced jumps
+  let possibleMoveCount = 0;
+  // Deduce moves and jumps
+  // Does the next player even have a move still?
   existingGame.tiles.forEach(row => {
     row.forEach(tile => {
-      if (tile.chip?.player === existingGame.playerTurn && getPossibleJumps(tile, existingGame.tiles).length > 0) {
-        forcedJumps.push({ x: tile.x, y: tile.y });
+      if (tile.chip?.player === existingGame.playerTurn) {
+        // Track forced moves
+        if (getPossibleMoves(tile, existingGame.tiles, true).length > 0) {forcedJumps.push({ x: tile.x, y: tile.y });
+      possibleMoveCount++;}
+        // Otherwise, check for any move to make sure they aren't stuck
+        else if (getPossibleMoves(tile, existingGame.tiles, false).length > 0) possibleMoveCount++;
       }
     })
   })
   existingGame.forcedJumps = forcedJumps;
+  // Other player wins if no moves are available
+  if (possibleMoveCount === 0){
+    existingGame.state = GameState.GAME_END;
+    existingGame.winReason = 'No available move';
+    existingGame.winner = existingGame.playerTurn === PlayerPosition.TWO ? PlayerPosition.ONE : PlayerPosition.TWO;
+  }
   // Update database
   await ongoingGames.updateOne(findById, {
     $set: existingGame
@@ -72,7 +84,6 @@ export const duckPlacement = async (props: GameActionProps) => {
     gameId,
   }
   sendToEveryone(JSON.stringify(duckResponse), gameId.toString());
-
   // Return new game state
   const gameState: GameStateMessage = {
     type: MessageType.GAME_STATE,
@@ -83,4 +94,8 @@ export const duckPlacement = async (props: GameActionProps) => {
   }
   sendToEveryone(JSON.stringify(gameState), gameId.toString());
 
+  // Game could end in this. Delete the game if true;
+  if (existingGame.state === GameState.GAME_END) {
+    ongoingGames.deleteOne(findById);
+  }
 }

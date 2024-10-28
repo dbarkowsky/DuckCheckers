@@ -9,6 +9,7 @@ import { v4 } from 'uuid';
 import { arrivalAnnouncement } from "./gameActions/arrivalAnnouncement.ts";
 import { moveRequest } from "./gameActions/moveRequest.ts";
 import { duckPlacement } from "./gameActions/duckPlacement.ts";
+import { forfeit } from "./gameActions/forfeit.ts";
 
 const { FRONTEND_URL, SERVER_PORT } = process.env;
 
@@ -88,6 +89,9 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
             socket,
             message
           });
+          break;
+        case MessageType.FORFEIT:
+          await forfeit({gameId, socket, existingGame, message});
           break;
         default:
           break;

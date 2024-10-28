@@ -45,7 +45,8 @@ module.exports = {
     'no-else-return': 'off',
     'no-case-declarations': 'off',
     'no-console': 'off',
-    'no-param-reassign': 'off'
+    'no-param-reassign': 'off',
+    'no-plusplus': 'off'
   },
   ignorePatterns: ['node_modules/', 'tests/'],
 };
