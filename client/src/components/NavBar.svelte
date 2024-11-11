@@ -15,10 +15,10 @@
 			{
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json'	
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					gameName: gameNameField,
+					gameName: gameNameField
 				})
 			}
 		);
@@ -57,20 +57,20 @@
 <nav>
 	<h1><a href="/" id="home-link">Duck Checkers</a></h1>
 	<div id="name-box">
-	<span>{'Your Name: '}</span>
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-	<Tooltip
-		tooltipText={'Click to scramble name'}
-		onClick={() => {
-			const newName = generateName();
-			window.localStorage.setItem('playerName', newName);
-			localStore.setPlayerName(newName);
-		}}
-	>
-		<span>{$localStore.playerName}</span>
-	</Tooltip>
-</div>
-	<button on:click={() => dialog.showModal()}>New Game</button>
+		<span>{'Your Name: '}</span>
+		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<Tooltip
+			tooltipText={'Click to scramble name'}
+			onClick={() => {
+				const newName = generateName();
+				window.localStorage.setItem('playerName', newName);
+				localStore.setPlayerName(newName);
+			}}
+		>
+			<span>{$localStore.playerName}</span>
+		</Tooltip>
+	</div>
+  	<button id="new-game" on:click={() => dialog.showModal()}>New Game</button>
 </nav>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -87,7 +87,7 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="dialog-window" on:click={(e) => e.stopPropagation()}>
-		<input type="text" bind:value={gameNameField}/>
+		<input type="text" bind:value={gameNameField} />
 		{#if dialogError.length}<p class="error-text">{dialogError}</p>{/if}
 		<button on:click={() => dialog.close()}>Cancel</button>
 		<button on:click={() => requestGame('red')}>Red</button>
@@ -95,31 +95,28 @@
 	</div>
 </dialog>
 
-<slot />
-
-<style>
+<style lang="scss">
 	nav {
-		height: 50px;
+		height: fit-content;
 		width: 100%;
-		/* background-color: grey; */
-		display: inline-flex;
+		display: flex;
+    flex-wrap: wrap;
 		justify-content: space-between;
+    margin: 0 auto;
 	}
 
 	a#home-link {
-		position: absolute;
-		top: 5px;
 		text-decoration: none;
 		color: yellow;
-		font-family: fantasy;
-		font-size: 1.4em;
+    font-family: "Chicle", serif;    
+    font-weight: 300;
+		font-size: 1.6em;
 	}
 
 	.dialog-window {
 		width: 200px;
 		height: 200px;
 		margin: auto;
-
 		background-color: black;
 	}
 
@@ -134,7 +131,31 @@
 		align-items: center;
 		gap: 1em;
 		color: yellow;
+    margin: 1em;
+    margin-right: 0;
+    font-family: "Atma", system-ui;
 	}
+
+  #new-game {
+    height: 50px;
+    width: 100%;
+    min-width: 280px;
+    font-family: "Atma", system-ui;
+    font-weight: 700;
+    font-size: 2em;
+    margin: auto;
+    background-color: #232327;
+    border: 1px solid white;
+    color: yellow;
+    border-radius: 10px;
+    &:hover {
+      background-color: rgb(78, 78, 78);
+    }
+  }
+
+  button {
+    cursor: pointer;
+  }
 
 	.error-text {
 		color: red;

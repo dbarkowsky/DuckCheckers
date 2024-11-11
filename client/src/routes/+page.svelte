@@ -3,6 +3,7 @@
 	import { env } from '$env/dynamic/public';
 	import type { IGame } from '../stores/gameStore';
 	import GameCard from '../components/GameCard/GameCard.svelte';
+	import NavBar from '../components/NavBar.svelte';
 
 	let games: IGame[] = [];
 	onMount(async () => {
@@ -17,6 +18,7 @@
 </script>
 
 <div class="background">
+  <NavBar/>
 	<div class="game-area">
 		{#each games as game}
 		<GameCard {game} />
@@ -32,6 +34,7 @@
 	.background {
 		width: 100%;
 		max-width: 900px;
+    min-width: 350px;
 		margin: 0 auto;
 	}
 
@@ -39,5 +42,6 @@
 		justify-content: space-around;
 		display: flex;
 		flex-wrap: wrap;
+    padding-top: 50px;
 	}
 </style>
