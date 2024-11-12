@@ -10,7 +10,9 @@ const collection = db.collection<IOngoingGame>('ongoingGames');
 
 export const getAllOngoing = async (req: Request, res: Response) => {
   try {
-    const results = await collection.find({}).toArray();
+    const results = await collection.find({}, {sort: {
+      "created": 'desc',
+    }}).toArray();
     if (results.length === 0) {
       return res.status(404).send('No ongoing games found.');
     }

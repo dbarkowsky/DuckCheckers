@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Tile from './Tile.svelte';
-	import type { ITile } from '../stores/gameStore';
 	import gameStore from '../stores/gameStore';
 	import localStore, { PlayerPosition } from '../stores/localStore';
 	export let socket: WebSocket;
@@ -22,16 +21,15 @@
 	#board {
 		padding: 2%;
 		background-color: rgba(245, 245, 245, 0.9);
-		margin: 2em auto;
+		margin: 1em auto;
 		width: 90%;
-		max-width: 700px;
 		height: fit-content;
 		transition: 1s ease-in-out;
 	}
 
 	.row {
 		display: flex;
-		max-height: calc(90vh / 8);
+		max-height: calc(100% / 8);
 		max-width: 700px;
 	}
 

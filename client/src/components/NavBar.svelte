@@ -87,11 +87,11 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="dialog-window" on:click={(e) => e.stopPropagation()}>
-		<input type="text" bind:value={gameNameField} />
+    <span>New Game</span>
+		<input type="text" bind:value={gameNameField} placeholder="Choose Game Name"/>
 		{#if dialogError.length}<p class="error-text">{dialogError}</p>{/if}
-		<button on:click={() => dialog.close()}>Cancel</button>
-		<button on:click={() => requestGame('red')}>Red</button>
-		<button on:click={() => requestGame('black')}>Black</button>
+		<button class="red-button" on:click={() => requestGame('red')}>Start as Red</button>
+		<button class="black-button" on:click={() => requestGame('black')}>Start as Black</button>
 	</div>
 </dialog>
 
@@ -115,9 +115,27 @@
 
 	.dialog-window {
 		width: 200px;
-		height: 200px;
+		height: fit-content;
+    padding: 2em;
 		margin: auto;
-		background-color: black;
+    margin-top: 200px;
+		background-color: rgb(43, 43, 43);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid yellow;
+    border-radius: 10px;
+
+    span {
+      color: yellow;
+    font-family: "Chicle", serif;    
+    font-weight: 300;
+		font-size: 1.6em;
+    margin: 0 auto;
+    }
+
+    input {
+      margin: 5px 0;
+    }
 	}
 
 	.dialog-background {
@@ -155,6 +173,29 @@
 
   button {
     cursor: pointer;
+    font-family: "Atma", system-ui;
+    font-weight: 500;
+    margin: 5px 0;
+  }
+
+  .black-button {
+    background-color: #232327;
+    border: 1px solid white;
+    color: white;
+    border-radius: 4px;
+    &:hover {
+      background-color: rgb(78, 78, 78);
+    }
+  }
+
+  .red-button {
+    background-color:  rgb(255, 103, 103);
+    border: 1px solid white;
+    color: black;
+    border-radius: 4px;
+    &:hover {
+      background-color: rgb(141, 55, 55);
+    }
   }
 
 	.error-text {

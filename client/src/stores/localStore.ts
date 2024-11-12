@@ -15,7 +15,7 @@ export interface ILocal {
 	}[];
 	isHovered?: { x: number; y: number } | undefined;
 	selectedTile?: ITile;
-	playerName: string;
+	playerName: string | null;
 	playerPosition: PlayerPosition;
 	taken: Record<number, number>;
 }
@@ -24,7 +24,7 @@ const createDefaultLocal = () =>
 	({
 		possibleMoves: [],
 		playerPosition: PlayerPosition.OBSERVER,
-		playerName: '',
+		playerName: null,
 		taken: {
 			1: 0,
 			2: 0,
@@ -71,7 +71,7 @@ const createLocal = () => {
 				...original,
 				isHovered: coords
 			})),
-		setPlayerName: (name: string) =>
+		setPlayerName: (name: string | null) =>
 			update((original) => ({
 				...original,
 				playerName: name

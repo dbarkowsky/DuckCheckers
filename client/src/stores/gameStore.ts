@@ -20,7 +20,7 @@ export interface IGame {
 	players: Record<number, DuckSocket | undefined>;
 	playerTurn: PlayerPosition;
 	tiles: ITile[][];
-	gameName: string;
+	gameName: string | undefined;
   winner?: PlayerPosition;
   winReason?: string;
   forcedJumps?: Location[];
@@ -159,6 +159,10 @@ const createGame = () => {
     updateForcedJumps: (forcedJumps?: Location[]) => update((original) => ({
       ...original,
       forcedJumps: forcedJumps ?? [],
+    })),
+    updateGameName: (name: string | undefined) => update((original) => ({
+      ...original,
+      gameName: name,
     })),
     setWinner: (winner: PlayerPosition, reason?: string) => update((original) => ({
       ...original,

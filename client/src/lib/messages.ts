@@ -31,6 +31,7 @@ export interface ArrivalResponse extends BaseMessage {
 	playerPosition: PlayerPosition;
 	playerTurn: PlayerPosition;
 	state: GameState;
+  gameName: string | undefined;
 	tiles: ITile[][];
 	players: Record<number, DuckSocket | undefined>;
   forcedJumps?: Location[];
@@ -72,6 +73,11 @@ export interface PlayerDataMessage extends BaseMessage {
 	type: MessageType.PLAYERS_UPDATE;
 	players: Record<number, DuckSocket | undefined>;
 	observers?: DuckSocket[];
+}
+
+export interface ForfeitRequest extends BaseMessage {
+  type: MessageType.FORFEIT;
+  requestor: PlayerPosition; 
 }
 
 export interface Location {

@@ -10,10 +10,10 @@
     $: smallChipColour = colour === 'black' ? red : black;
 </script>
 
-<div class="playerCount">
+<div class="player-count">
   <div style="--colour:{chipColour};" class="chip" />
-  <div>
-    <p>{name}</p>
+  <div class="name-box">
+    <p class="player-name">{name}</p>
     <div class="count-box">
       {#each {length: chipCount} as _}
         <div style="--smallChipColour:{smallChipColour}" class="chip small-chip" />
@@ -23,12 +23,26 @@
 </div>
 
 <style>
-  .playerCount {
+  .player-count {
 		height: 70px;
-		width: 200px;
+		width: fit-content;
 		display: flex;
     align-items: center;
+    border: 1px solid white;
+    border-radius: 10px;
+    padding: 3px 10px;
 	}
+
+  .player-name {
+    font-family: "Atma", system-ui;
+    font-weight: 700;
+    font-size: 1rem;
+    color: yellow;
+  }
+
+  .name-box{
+    width: 100%;
+  }
 
   .chip {
 		position: relative;

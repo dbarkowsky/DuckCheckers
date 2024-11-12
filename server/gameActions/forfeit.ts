@@ -31,4 +31,7 @@ export const forfeit = async (props: GameActionProps) => {
   }
   
   await sendToEveryone(JSON.stringify(gameStateMessage), gameId.toString());
+
+  // Delete the game after
+  await ongoingGames.deleteOne(findById);
 }
