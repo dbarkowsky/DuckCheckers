@@ -131,9 +131,7 @@
 	{#if tile.chip}
 		<Chip
 			colour={tile.chip.colour}
-			rotate={tile.chip.player === PlayerPosition.TWO ||
-				(tile.chip.player === PlayerPosition.DUCK &&
-					$localStore.playerPosition === PlayerPosition.TWO)}
+			rotate={$localStore.playerPosition === PlayerPosition.TWO}
 		>
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
