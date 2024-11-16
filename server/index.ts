@@ -11,7 +11,7 @@ import { moveRequest } from "./gameActions/moveRequest.ts";
 import { duckPlacement } from "./gameActions/duckPlacement.ts";
 import { forfeit } from "./gameActions/forfeit.ts";
 
-const { FRONTEND_URL, SERVER_PORT } = process.env;
+const { SERVER_URL, SERVER_PORT } = process.env;
 
 const port = +(SERVER_PORT ?? 9000);
 
@@ -113,7 +113,7 @@ export const sendToEveryone = (message: string, gameId: string) => {
 const server = http.createServer(app);
 
 server.listen(port, () => {
-  console.info(`Express is running at ${FRONTEND_URL ?? `localhost:${port}`}`);
+  console.info(`Express is running at ${SERVER_URL ?? 'localhost'}:${port}`);
 });
 
 // Handles upgrade from HTTP to WS. Emits a connection event

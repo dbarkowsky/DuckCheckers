@@ -121,25 +121,25 @@
 
 	$: player = {
 		name:
-			($localStore.playerPosition === PlayerPosition.ONE
-				? $gameStore?.players[PlayerPosition.ONE]?.playerName
-				: $gameStore?.players[PlayerPosition.TWO]?.playerName) ?? 'Waiting for player',
-		chipCount:
-			$localStore.playerPosition === PlayerPosition.ONE
-				? $localStore.taken[PlayerPosition.TWO]
-				: $localStore.taken[PlayerPosition.ONE],
-		colour: $localStore.playerPosition === PlayerPosition.ONE ? 'red' : 'black'
-	} as PlayerInfo;
-	$: opponent = {
-		name:
-			($localStore.playerPosition === PlayerPosition.ONE
+			($localStore.playerPosition === PlayerPosition.TWO
 				? $gameStore?.players[PlayerPosition.TWO]?.playerName
 				: $gameStore?.players[PlayerPosition.ONE]?.playerName) ?? 'Waiting for player',
 		chipCount:
-			$localStore.playerPosition === PlayerPosition.ONE
+			$localStore.playerPosition === PlayerPosition.TWO
 				? $localStore.taken[PlayerPosition.ONE]
 				: $localStore.taken[PlayerPosition.TWO],
-		colour: $localStore.playerPosition === PlayerPosition.ONE ? 'black' : 'red'
+		colour: $localStore.playerPosition === PlayerPosition.TWO ? 'black' : 'red'
+	} as PlayerInfo;
+	$: opponent = {
+		name:
+			($localStore.playerPosition === PlayerPosition.TWO
+				? $gameStore?.players[PlayerPosition.ONE]?.playerName
+				: $gameStore?.players[PlayerPosition.TWO]?.playerName) ?? 'Waiting for player',
+		chipCount:
+			$localStore.playerPosition === PlayerPosition.TWO
+				? $localStore.taken[PlayerPosition.TWO]
+				: $localStore.taken[PlayerPosition.ONE],
+		colour: $localStore.playerPosition === PlayerPosition.TWO ? 'red' : 'black'
 	} as PlayerInfo;
 
 	let dialog: HTMLDialogElement;
