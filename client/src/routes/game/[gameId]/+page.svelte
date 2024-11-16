@@ -232,15 +232,7 @@
 		justify-content: space-between;
 	}
 
-	.side {
-		max-width: 300px;
-	}
-
-	.text {
-		color: white;
-	}
-
-	button {
+		button {
 		padding: 5px 10px;
 		font-weight: bold;
 		font-family: Geneva, Tahoma, sans-serif;
@@ -251,10 +243,6 @@
 
 	button:hover {
 		background-color: rgb(179, 209, 235);
-	}
-
-	.button-selected {
-		background-color: rgb(127, 226, 165);
 	}
 
 	#game-name {
