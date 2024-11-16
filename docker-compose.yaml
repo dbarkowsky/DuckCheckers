@@ -33,7 +33,7 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DATABASE_NAME=duck-db
+      - MONGO_DATABASE_NAME=${MONGO_DATABASE}
     volumes:
       - ./mongoSeed/init:/docker-entrypoint-initdb.d
       - ./mongo/init/data:/tmp/data
@@ -48,6 +48,7 @@ services:
       timeout: 30s
       retries: 5
       start_period: 120s
+
   #############
   #### API ####
   #############
@@ -61,8 +62,22 @@ services:
       - .env
     ports:
       - ${SERVER_PORT:-22222}:22222
-    # depends_on:
-    #   - mongo
+    networks:
+      - duck-net
+  #############
+  #### APP ####
+  #############
+  app:
+    restart: 'no'
+    container_name: duck-app
+    build:
+      context: client
+      target: base
+    environment:
+      - PUBLIC_SERVER_PORT=${SERVER_PORT}
+      - PUBLIC_SERVER_URL=${SERVER_URL}
+    ports:
+      - 4173:4173
     networks:
       - duck-net
 ###########

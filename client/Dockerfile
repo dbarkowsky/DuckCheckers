@@ -1,8 +1,7 @@
-# Use an official bun runtime as a base image
 FROM oven/bun:1 as base
 
 # Set the working directory in the container
-WORKDIR /express-api
+WORKDIR /app
 
 ENV CONTAINERIZED=true
 
@@ -12,5 +11,9 @@ COPY . .
 # Install packages. Needed for build process.
 RUN bun i
 
+RUN bun run build
+
+EXPOSE 4173
+
 # Compile to JavaScript build 
-ENTRYPOINT bun run --hot index.ts
+ENTRYPOINT bun run preview --host
