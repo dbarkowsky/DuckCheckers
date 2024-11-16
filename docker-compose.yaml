@@ -48,6 +48,23 @@ services:
       timeout: 30s
       retries: 5
       start_period: 120s
+  #############
+  #### API ####
+  #############
+  api:
+    restart: 'no'
+    container_name: duck-api
+    build:
+      context: server
+      target: base
+    env_file:
+      - .env
+    ports:
+      - ${SERVER_PORT:-22222}:22222
+    # depends_on:
+    #   - mongo
+    networks:
+      - duck-net
 ###########
 ### NET ###
 ###########

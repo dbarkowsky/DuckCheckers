@@ -6,6 +6,8 @@ const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT, MONGO_SERVICE, MONGO_DATABAS
 // Changing where to look for Mongo
 const MONGO_HOSTNAME = CONTAINERIZED ? MONGO_SERVICE : 'localhost';
 
+console.log(`Connecting to: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`)
+
 // Create connection client
 const client: MongoClient = new MongoClient(
   `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`,
