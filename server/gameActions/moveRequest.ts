@@ -40,7 +40,7 @@ export const moveRequest = async (props: GameActionProps) => {
 
   // Should that chip continue?
   const tileThatMoved = existingGame.tiles[moveRequest.to.x][moveRequest.to.y];
-  const possibleMoves = getPossibleMoves(tileThatMoved, existingGame.tiles);
+  const possibleMoves = getPossibleMoves(tileThatMoved, existingGame.tiles, true);
 
   // Did anyone win this time? There should be 0 of one player's chips.
   const tiles = existingGame.tiles.flat(1);

@@ -74,6 +74,8 @@ export interface ArrivalResponse extends BaseMessage {
   gameName: string;
   players: Record<number, DuckSocket | undefined>
   forcedJumps?: Location[];
+  winner?: PlayerPosition;
+  winReason?: string;
 }
  
  export interface CommunicationMessage extends BaseMessage {

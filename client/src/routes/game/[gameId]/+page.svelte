@@ -17,6 +17,7 @@
 	import { page } from '$app/stores';
 	import PlayerCard from '../../../components/PlayerCard/PlayerCard.svelte';
 	import { goto } from '$app/navigation';
+	import GameStateBoard from '../../../components/GameStateBoard.svelte';
 
 	export let data;
 
@@ -65,7 +66,7 @@
 						gameStore.updateState(gameData.state);
 						gameStore.updateTurn(gameData.playerTurn);
 						gameStore.updateForcedJumps(gameData.forcedJumps);
-						if (gameData.winner) {
+						if (gameData.winner != null) {
 							gameStore.setWinner(gameData.winner, gameData.winReason);
 						}
 						break;
@@ -82,6 +83,7 @@
 						gameStore.updatePlayers(arrivalData.players);
 						gameStore.updateForcedJumps(arrivalData.forcedJumps);
 						gameStore.updateGameName(arrivalData.gameName);
+            gameStore.setWinner(arrivalData.winner, arrivalData.winReason);
 						localStore.setPlayerPosition(arrivalData.playerPosition);
 						localStore.updateTaken(arrivalData.tiles);
 						console.log(`Connected to game ID: ${data.gameId} as ${$localStore.playerName}`);
@@ -143,71 +145,33 @@
 	let dialog: HTMLDialogElement;
 </script>
 
-<div class="background">
-	<!-- <div class="side">
-		<input type="text" bind:value={fieldValue} />
-		<button on:click={sendMessage}>Send</button>
-		<br />
-		<h2 class="text">Choose colour:</h2>
-		<button
-			class={$localStore.playerPosition === PlayerPosition.ONE ? 'button-selected' : ''}
-			on:click={() => {
-				localStore.setPlayerPosition(PlayerPosition.ONE);
-			}}>RED</button
-		>
-		<button
-			class={$localStore.playerPosition === PlayerPosition.TWO ? 'button-selected' : ''}
-			on:click={() => {
-				localStore.setPlayerPosition(PlayerPosition.TWO);
-			}}>BLACK</button
-		>
-		<h3 class="text">{$gameStore.playerTurn === 0 ? 'Red' : 'Black'}'s turn</h3>
-		{#if $gameStore.state === GameState.PLAYER_MOVE}
-			<h3 class="text">Move Chip</h3>
-		{/if}
-		{#if $gameStore.state === GameState.PLAYER_CONTINUE}
-			<h3 class="text">Continue Jumping</h3>
-		{/if}
-		{#if $gameStore.state === GameState.PLAYER_DUCK}
-			<h3 class="text">Place Duck</h3>
-		{/if}
-		<br />
-    <p>{$gameStore.forcedJumps}</p>
-		<button
-			style="margin-top: 2em;"
-			on:click={() => {
-				socket.send(
-					JSON.stringify({
-						type: MessageType.RESET
-					})
-				);
-			}}>Reset Game</button
-		>
-	</div> -->
-	<div>
-		<!-- svelte-ignore a11y-click-events-have-key-events -->
-		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-		<h2
-			id="back"
-			on:click={() => {
-				goto('/');
-			}}
-		>
-			←
-		</h2>
-	</div>
+<div class="background">	
 	<div id="board-box">
+    <div id="banner">
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+      <h2
+        id="back"
+        on:click={() => {
+          goto('/');
+        }}
+      >
+        ←
+      </h2>
+      <GameStateBoard />
+    </div>
 		<h2 id="game-name">{$gameStore.gameName ?? 'Missing Game Name'}</h2>
 		<div class="player-area">
 			<PlayerCard name={opponent.name} chipCount={opponent.chipCount} colour={opponent.colour} />
-			{#if $localStore.playerPosition !== PlayerPosition.OBSERVER}<button
-					id="forfeit"
-					on:click={() => dialog.showModal()}>Forfeit</button
-				>{/if}
+			
 		</div>
 		<Board {socket} />
 		<div class="player-area">
 			<PlayerCard name={player.name} chipCount={player.chipCount} colour={player.colour} />
+      {#if $localStore.playerPosition !== PlayerPosition.OBSERVER}<button
+					id="forfeit"
+					on:click={() => dialog.showModal()}>Forfeit</button
+				>{/if}
 		</div>
 	</div>
 </div>
@@ -378,4 +342,9 @@
 		height: 100vh;
 		background-color: rgba(255, 255, 255, 0.226);
 	}
+
+  #banner {
+    display: flex;
+    justify-content: space-between;
+  }
 </style>

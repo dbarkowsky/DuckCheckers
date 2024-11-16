@@ -19,6 +19,8 @@ export const arrivalAnnouncement = async (props: GameActionProps) => {
     gameName: existingGame.gameName,
     players: existingGame.players,
     forcedJumps: existingGame.forcedJumps,
+    winner: existingGame.winner,
+    winReason: existingGame.winReason,
   } as Partial<ArrivalResponse>;
   // Attach their name
   socket.playerName = arrivalData.playerName;

@@ -46,7 +46,6 @@
 
 	const clickHandler = () => {
 		if (isPlayersTurn()) {
-			console.log('click', $gameStore, $localStore);
 			const isThisPlayersChip = tile.chip && tile.chip.player === $localStore.playerPosition;
 			const isInForcedJumps = Boolean(
 				$gameStore.forcedJumps?.find((location) => location.x === tile.x && location.y === tile.y)
@@ -72,12 +71,10 @@
 				case GameState.PLAYER_CONTINUE:
 					// Selected tile here should be set by server
 					if (isThisPlayersChip && !restrictedByForcedJump) {
-						console.log('setting selected tile');
 						localStore.setSelectedTile(tile);
 						// Decide which tiles can be moved to
 						localStore.setPossibleMoves(getPossibleMoves(tile, true));
 					} else if ($localStore.selectedTile) {
-						console.log('moving tile');
 						if (isPossibleMove()) {
 							sendMove(tile);
 						}

@@ -164,10 +164,10 @@ const createGame = () => {
       ...original,
       gameName: name,
     })),
-    setWinner: (winner: PlayerPosition, reason?: string) => update((original) => ({
+    setWinner: (winner?: PlayerPosition, reason?: string) => update((original) => ({
       ...original,
       winner,
-      winReason: reason ?? 'Great game!',
+      winReason: reason,
     }))
 	};
 };

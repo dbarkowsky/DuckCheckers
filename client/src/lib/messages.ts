@@ -35,6 +35,8 @@ export interface ArrivalResponse extends BaseMessage {
 	tiles: ITile[][];
 	players: Record<number, DuckSocket | undefined>;
   forcedJumps?: Location[];
+  winner?: PlayerPosition;
+  winReason?: string;
 }
 
 export interface CommunicationMessage extends BaseMessage {
