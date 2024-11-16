@@ -10,9 +10,9 @@ export enum GameState {
 }
 
 export interface DuckSocket extends WebSocket {
-  gameId: string;
-  uuid: string;
-  playerName: string;
+	gameId: string;
+	uuid: string;
+	playerName: string;
 }
 
 export interface IGame {
@@ -21,9 +21,9 @@ export interface IGame {
 	playerTurn: PlayerPosition;
 	tiles: ITile[][];
 	gameName: string | undefined;
-  winner?: PlayerPosition;
-  winReason?: string;
-  forcedJumps?: Location[];
+	winner?: PlayerPosition;
+	winReason?: string;
+	forcedJumps?: Location[];
 	// Not all of these are actually optional when received...
 	_id?: string;
 	created?: Date;
@@ -119,7 +119,7 @@ const createGame = () => {
 		playerTurn: PlayerPosition.ONE,
 		tiles: makeDefaultTiles(),
 		gameName: '',
-    forcedJumps: [],
+		forcedJumps: []
 	};
 
 	const { subscribe, set, update } = writable<IGame>(temporaryGameState);
@@ -151,24 +151,28 @@ const createGame = () => {
 				...original,
 				playerTurn: newTurn
 			})),
-		updatePlayers: (players: Record<number, DuckSocket | undefined>, observers?: DuckSocket[]) => update((original) => ({
-			...original,
-			players,
-			observers,
-		})),
-    updateForcedJumps: (forcedJumps?: Location[]) => update((original) => ({
-      ...original,
-      forcedJumps: forcedJumps ?? [],
-    })),
-    updateGameName: (name: string | undefined) => update((original) => ({
-      ...original,
-      gameName: name,
-    })),
-    setWinner: (winner?: PlayerPosition, reason?: string) => update((original) => ({
-      ...original,
-      winner,
-      winReason: reason,
-    }))
+		updatePlayers: (players: Record<number, DuckSocket | undefined>, observers?: DuckSocket[]) =>
+			update((original) => ({
+				...original,
+				players,
+				observers
+			})),
+		updateForcedJumps: (forcedJumps?: Location[]) =>
+			update((original) => ({
+				...original,
+				forcedJumps: forcedJumps ?? []
+			})),
+		updateGameName: (name: string | undefined) =>
+			update((original) => ({
+				...original,
+				gameName: name
+			})),
+		setWinner: (winner?: PlayerPosition, reason?: string) =>
+			update((original) => ({
+				...original,
+				winner,
+				winReason: reason
+			}))
 	};
 };
 

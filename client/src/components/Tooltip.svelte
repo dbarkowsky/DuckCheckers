@@ -18,9 +18,9 @@
 		justify-content: center;
 		align-items: center;
 		border: solid 1px white;
-    border-radius: 10px;
+		border-radius: 10px;
 		padding: 0.5em;
-    width: 9em;
+		width: 9em;
 		&:hover {
 			cursor: pointer;
 		}
@@ -39,8 +39,8 @@
 		/* Position the tooltip text */
 		position: absolute;
 		z-index: 1;
-    top: 2em;
-    left: -1em;
+		top: 2em;
+		left: -1em;
 	}
 
 	/* Show the tooltip text when you mouse over the tooltip container */

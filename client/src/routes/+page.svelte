@@ -18,11 +18,11 @@
 </script>
 
 <div class="background">
-  <NavBar/>
+	<NavBar />
 	<div class="game-area">
 		{#each games as game}
-		<GameCard {game} />
-	{/each}
+			<GameCard {game} />
+		{/each}
 	</div>
 </div>
 
@@ -34,14 +34,14 @@
 	.background {
 		width: 100%;
 		max-width: 900px;
-    min-width: 350px;
+		min-width: 350px;
 		margin: 0 auto;
 	}
 
-	.game-area { 
+	.game-area {
 		justify-content: space-around;
 		display: flex;
 		flex-wrap: wrap;
-    padding-top: 50px;
+		padding-top: 50px;
 	}
 </style>

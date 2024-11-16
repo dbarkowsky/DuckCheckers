@@ -70,7 +70,7 @@
 			<span>{$localStore.playerName}</span>
 		</Tooltip>
 	</div>
-  	<button id="new-game" on:click={() => dialog.showModal()}>New Game</button>
+	<button id="new-game" on:click={() => dialog.showModal()}>New Game</button>
 </nav>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -87,8 +87,8 @@
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div class="dialog-window" on:click={(e) => e.stopPropagation()}>
-    <span>New Game</span>
-		<input type="text" bind:value={gameNameField} placeholder="Choose Game Name"/>
+		<span>New Game</span>
+		<input type="text" bind:value={gameNameField} placeholder="Choose Game Name" />
 		{#if dialogError.length}<p class="error-text">{dialogError}</p>{/if}
 		<button class="red-button" on:click={() => requestGame('red')}>Start as Red</button>
 		<button class="black-button" on:click={() => requestGame('black')}>Start as Black</button>
@@ -100,42 +100,42 @@
 		height: fit-content;
 		width: 100%;
 		display: flex;
-    flex-wrap: wrap;
+		flex-wrap: wrap;
 		justify-content: space-between;
-    margin: 0 auto;
+		margin: 0 auto;
 	}
 
 	a#home-link {
 		text-decoration: none;
 		color: yellow;
-    font-family: "Chicle", serif;    
-    font-weight: 300;
+		font-family: 'Chicle', serif;
+		font-weight: 300;
 		font-size: 1.6em;
 	}
 
 	.dialog-window {
 		width: 200px;
 		height: fit-content;
-    padding: 2em;
+		padding: 2em;
 		margin: auto;
-    margin-top: 200px;
+		margin-top: 200px;
 		background-color: rgb(43, 43, 43);
-    display: flex;
-    flex-direction: column;
-    border: 1px solid yellow;
-    border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		border: 1px solid yellow;
+		border-radius: 10px;
 
-    span {
-      color: yellow;
-    font-family: "Chicle", serif;    
-    font-weight: 300;
-		font-size: 1.6em;
-    margin: 0 auto;
-    }
+		span {
+			color: yellow;
+			font-family: 'Chicle', serif;
+			font-weight: 300;
+			font-size: 1.6em;
+			margin: 0 auto;
+		}
 
-    input {
-      margin: 5px 0;
-    }
+		input {
+			margin: 5px 0;
+		}
 	}
 
 	.dialog-background {
@@ -149,54 +149,54 @@
 		align-items: center;
 		gap: 1em;
 		color: yellow;
-    margin: 1em;
-    margin-right: 0;
-    font-family: "Atma", system-ui;
+		margin: 1em;
+		margin-right: 0;
+		font-family: 'Atma', system-ui;
 	}
 
-  #new-game {
-    height: 50px;
-    width: 100%;
-    min-width: 280px;
-    font-family: "Atma", system-ui;
-    font-weight: 700;
-    font-size: 2em;
-    margin: auto;
-    background-color: #232327;
-    border: 1px solid white;
-    color: yellow;
-    border-radius: 10px;
-    &:hover {
-      background-color: rgb(78, 78, 78);
-    }
-  }
+	#new-game {
+		height: 50px;
+		width: 100%;
+		min-width: 280px;
+		font-family: 'Atma', system-ui;
+		font-weight: 700;
+		font-size: 2em;
+		margin: auto;
+		background-color: #232327;
+		border: 1px solid white;
+		color: yellow;
+		border-radius: 10px;
+		&:hover {
+			background-color: rgb(78, 78, 78);
+		}
+	}
 
-  button {
-    cursor: pointer;
-    font-family: "Atma", system-ui;
-    font-weight: 500;
-    margin: 5px 0;
-  }
+	button {
+		cursor: pointer;
+		font-family: 'Atma', system-ui;
+		font-weight: 500;
+		margin: 5px 0;
+	}
 
-  .black-button {
-    background-color: #232327;
-    border: 1px solid white;
-    color: white;
-    border-radius: 4px;
-    &:hover {
-      background-color: rgb(78, 78, 78);
-    }
-  }
+	.black-button {
+		background-color: #232327;
+		border: 1px solid white;
+		color: white;
+		border-radius: 4px;
+		&:hover {
+			background-color: rgb(78, 78, 78);
+		}
+	}
 
-  .red-button {
-    background-color:  rgb(255, 103, 103);
-    border: 1px solid white;
-    color: black;
-    border-radius: 4px;
-    &:hover {
-      background-color: rgb(141, 55, 55);
-    }
-  }
+	.red-button {
+		background-color: rgb(255, 103, 103);
+		border: 1px solid white;
+		color: black;
+		border-radius: 4px;
+		&:hover {
+			background-color: rgb(141, 55, 55);
+		}
+	}
 
 	.error-text {
 		color: red;

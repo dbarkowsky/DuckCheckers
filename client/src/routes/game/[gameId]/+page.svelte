@@ -83,7 +83,7 @@
 						gameStore.updatePlayers(arrivalData.players);
 						gameStore.updateForcedJumps(arrivalData.forcedJumps);
 						gameStore.updateGameName(arrivalData.gameName);
-            gameStore.setWinner(arrivalData.winner, arrivalData.winReason);
+						gameStore.setWinner(arrivalData.winner, arrivalData.winReason);
 						localStore.setPlayerPosition(arrivalData.playerPosition);
 						localStore.updateTaken(arrivalData.tiles);
 						console.log(`Connected to game ID: ${data.gameId} as ${$localStore.playerName}`);
@@ -145,30 +145,29 @@
 	let dialog: HTMLDialogElement;
 </script>
 
-<div class="background">	
+<div class="background">
 	<div id="board-box">
-    <div id="banner">
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-      <h2
-        id="back"
-        on:click={() => {
-          goto('/');
-        }}
-      >
-        ←
-      </h2>
-      <GameStateBoard />
-    </div>
+		<div id="banner">
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+			<h2
+				id="back"
+				on:click={() => {
+					goto('/');
+				}}
+			>
+				←
+			</h2>
+			<GameStateBoard />
+		</div>
 		<h2 id="game-name">{$gameStore.gameName ?? 'Missing Game Name'}</h2>
 		<div class="player-area">
 			<PlayerCard name={opponent.name} chipCount={opponent.chipCount} colour={opponent.colour} />
-			
 		</div>
 		<Board {socket} />
 		<div class="player-area">
 			<PlayerCard name={player.name} chipCount={player.chipCount} colour={player.colour} />
-      {#if $localStore.playerPosition !== PlayerPosition.OBSERVER}<button
+			{#if $localStore.playerPosition !== PlayerPosition.OBSERVER}<button
 					id="forfeit"
 					on:click={() => dialog.showModal()}>Forfeit</button
 				>{/if}
@@ -192,15 +191,18 @@
 	<div class="dialog-window" on:click={(e) => e.stopPropagation()}>
 		<span>Forfeit?</span>
 		<button class="black-button" on:click={() => dialog.close()}>Cancel</button>
-		<button class="red-button" on:click={() => {
-      socket.send(
+		<button
+			class="red-button"
+			on:click={() => {
+				socket.send(
 					JSON.stringify({
 						type: MessageType.FORFEIT,
-            requestor: $localStore.playerPosition,
+						requestor: $localStore.playerPosition
 					})
 				);
-      dialog.close();
-    }}>Confirm</button>
+				dialog.close();
+			}}>Confirm</button
+		>
 	</div>
 </dialog>
 
@@ -289,62 +291,62 @@
 		}
 	}
 
-  .dialog-window {
+	.dialog-window {
 		width: 200px;
 		height: fit-content;
-    padding: 2em;
+		padding: 2em;
 		margin: auto;
-    margin-top: 200px;
+		margin-top: 200px;
 		background-color: rgb(43, 43, 43);
-    display: flex;
-    flex-direction: column;
-    border: 1px solid yellow;
-    border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		border: 1px solid yellow;
+		border-radius: 10px;
 
-    span {
-      color: yellow;
-    font-family: "Chicle", serif;    
-    font-weight: 300;
-		font-size: 1.6em;
-    margin: 0 auto;
-    }
+		span {
+			color: yellow;
+			font-family: 'Chicle', serif;
+			font-weight: 300;
+			font-size: 1.6em;
+			margin: 0 auto;
+		}
 
-    button {
-    cursor: pointer;
-    font-family: "Atma", system-ui;
-    font-weight: 500;
-    margin: 5px 0;
-  }
+		button {
+			cursor: pointer;
+			font-family: 'Atma', system-ui;
+			font-weight: 500;
+			margin: 5px 0;
+		}
 
-  .black-button {
-    background-color: #232327;
-    border: 1px solid white;
-    color: white;
-    border-radius: 4px;
-    &:hover {
-      background-color: rgb(78, 78, 78);
-    }
-  }
+		.black-button {
+			background-color: #232327;
+			border: 1px solid white;
+			color: white;
+			border-radius: 4px;
+			&:hover {
+				background-color: rgb(78, 78, 78);
+			}
+		}
 
-  .red-button {
-    background-color:  rgb(255, 103, 103);
-    border: 1px solid white;
-    color: black;
-    border-radius: 4px;
-    &:hover {
-      background-color: rgb(141, 55, 55);
-    }
-  }
+		.red-button {
+			background-color: rgb(255, 103, 103);
+			border: 1px solid white;
+			color: black;
+			border-radius: 4px;
+			&:hover {
+				background-color: rgb(141, 55, 55);
+			}
+		}
 	}
 
-  .dialog-background {
+	.dialog-background {
 		width: 100vw;
 		height: 100vh;
 		background-color: rgba(255, 255, 255, 0.226);
 	}
 
-  #banner {
-    display: flex;
-    justify-content: space-between;
-  }
+	#banner {
+		display: flex;
+		justify-content: space-between;
+	}
 </style>

@@ -126,10 +126,7 @@
 	}}
 >
 	{#if tile.chip}
-		<Chip
-			colour={tile.chip.colour}
-			rotate={$localStore.playerPosition === PlayerPosition.TWO}
-		>
+		<Chip colour={tile.chip.colour} rotate={$localStore.playerPosition === PlayerPosition.TWO}>
 			{#if tile.chip.isKinged}
 				<img class="crown" src={crownSVG} alt="crown" />
 			{/if}

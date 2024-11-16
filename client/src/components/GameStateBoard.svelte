@@ -22,7 +22,7 @@
 	<p>{textToShow()}</p>
 	{#if $gameStore.winner != null}
 		<p id="win-reason">{$gameStore.winReason}</p>
-  {/if}
+	{/if}
 </div>
 
 <style lang="scss">
@@ -31,24 +31,24 @@
 		width: fit-content;
 		margin: 0 auto;
 		margin-right: 0;
-    padding: 1px 1em;
+		padding: 1px 1em;
 		border: 1px solid white;
 		border-radius: 10px;
 		transition: all 1s ease-in-out;
-    display: flex;
-    justify-content: flex-start;
-    flex-direction: column;
+		display: flex;
+		justify-content: flex-start;
+		flex-direction: column;
 
 		p {
 			color: yellow;
 			font-family: 'Chicle', serif;
 			font-weight: 300;
 			font-size: 1.6em;
-      margin: auto;
+			margin: auto;
 		}
 
-    #win-reason {
-        font-size: 1em;
-      }
+		#win-reason {
+			font-size: 1em;
+		}
 	}
 </style>

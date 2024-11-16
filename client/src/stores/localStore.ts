@@ -27,21 +27,21 @@ const createDefaultLocal = () =>
 		playerName: null,
 		taken: {
 			1: 0,
-			2: 0,
+			2: 0
 		}
 	}) as ILocal;
 
-	const startingChips = 12;
-	const countChips = (player: PlayerPosition, tiles: ITile[][]) => {
-		if (!tiles) return startingChips;
-		let count = 0;
-		const localTiles = tiles.flat(1);
-		localTiles.forEach((tile) => {
-			if (tile.chip?.player === PlayerPosition.ONE && player === PlayerPosition.ONE) count++;
-			if (tile.chip?.player === PlayerPosition.TWO && player === PlayerPosition.TWO) count++;
-		});
-		return count;
-	};
+const startingChips = 12;
+const countChips = (player: PlayerPosition, tiles: ITile[][]) => {
+	if (!tiles) return startingChips;
+	let count = 0;
+	const localTiles = tiles.flat(1);
+	localTiles.forEach((tile) => {
+		if (tile.chip?.player === PlayerPosition.ONE && player === PlayerPosition.ONE) count++;
+		if (tile.chip?.player === PlayerPosition.TWO && player === PlayerPosition.TWO) count++;
+	});
+	return count;
+};
 
 const createLocal = () => {
 	// Setting up the store
@@ -87,8 +87,8 @@ const createLocal = () => {
 			taken[PlayerPosition.TWO] = startingChips - countChips(PlayerPosition.TWO, tiles);
 			update((original) => ({
 				...original,
-				taken: taken,
-			}))
+				taken: taken
+			}));
 		}
 	};
 };
