@@ -4,28 +4,11 @@ import compression from 'compression';
 import morgan from 'morgan';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
-import swaggerJSDoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
 import router from './routes';
 
 const app: express.Application = express();
 
-const { TESTING, BACKEND_URL, FRONTEND_URL } = process.env;
-
-// Swagger Configuration
-const swaggerURL = `${BACKEND_URL}/api`;
-const OPENAPI_OPTIONS = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Duck Checkers',
-      version: '1.0.0',
-      description: '',
-    },
-    servers: [{ url: swaggerURL }],
-  },
-  apis: ['./docs/*.yaml'],
-};
+const { TESTING, FRONTEND_URL } = process.env;
 
 // Express Rate Limiter Configuration
 const limiter = rateLimit({
@@ -65,9 +48,6 @@ app.use('/api', HeaderHandler as RequestHandler);
 
 // Use rate limiter if not testing
 if (!TESTING) app.use(limiter);
-
-// Swagger service route
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(OPENAPI_OPTIONS)));
 
 // Other Routes
 app.use('/api', router.ongoingGamesRouter);
