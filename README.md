@@ -1,4 +1,4 @@
-# DuckCheckers
+# Duck Checkers
 
 This was a project that I started for someone who wanted a Checkers version of [Duck Chess](https://www.chess.com/terms/duck-chess).
 
