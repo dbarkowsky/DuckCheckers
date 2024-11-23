@@ -13,11 +13,11 @@
 		type PlayerDataMessage
 	} from '$lib/messages';
 	import localStore, { PlayerPosition } from '../../../stores/localStore';
-	import { env } from '$env/dynamic/public';
 	import { page } from '$app/stores';
 	import PlayerCard from '../../../components/PlayerCard/PlayerCard.svelte';
 	import { goto } from '$app/navigation';
 	import GameStateBoard from '../../../components/GameStateBoard.svelte';
+	import { constructApiUrl } from '$lib/constructApiUrl';
 
 	export let data;
 
@@ -42,7 +42,7 @@
 	onMount(() => {
 		localStore.setPlayerName(window.localStorage.getItem('playerName'));
 		socket = new WebSocket(
-			`ws://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/${data.gameId}`
+			`${constructApiUrl(true)}/${data.gameId}`
 		) as DuckSocket;
 		socket.addEventListener('open', () => {
 			// Announce arrival and request the current game state

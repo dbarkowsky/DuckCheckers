@@ -1,14 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { env } from '$env/dynamic/public';
 	import type { IGame } from '../stores/gameStore';
 	import GameCard from '../components/GameCard/GameCard.svelte';
 	import NavBar from '../components/NavBar.svelte';
+	import { constructApiUrl } from '$lib/constructApiUrl';
 
 	let games: IGame[] = [];
 	onMount(async () => {
 		const response = await fetch(
-			`http://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/api/ongoing`,
+			`${constructApiUrl()}/api/ongoing`,
 			{
 				method: 'GET'
 			}

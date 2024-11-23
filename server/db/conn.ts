@@ -1,15 +1,15 @@
 import { MongoClient } from 'mongodb';
 
-const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT, MONGO_SERVICE, MONGO_DATABASE, CONTAINERIZED } =
+const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT, MONGO_SERVICE, MONGO_DATABASE, CONTAINERIZED, MONGO_URL } =
   process.env;
 
 // Changing where to look for Mongo
 const MONGO_HOSTNAME = CONTAINERIZED ? MONGO_SERVICE : 'localhost';
 
-console.log(`Connecting to: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`)
+console.log(`Connecting to: mongodb`)
 
 // Create connection client
-const client: MongoClient = new MongoClient(
+const client: MongoClient = new MongoClient(MONGO_URL ?? 
   `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}`,
 );
 

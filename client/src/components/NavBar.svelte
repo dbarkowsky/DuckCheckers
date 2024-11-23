@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { env } from '$env/dynamic/public';
 	import { onMount } from 'svelte';
 	import localStore from '../stores/localStore';
 	import { generateSlug } from 'random-word-slugs';
 	import Tooltip from '../components/Tooltip.svelte';
+	import { constructApiUrl } from '$lib/constructApiUrl';
 
 	$: gameNameField = '';
 	$: dialogError = '';
 	let dialog: HTMLDialogElement;
 	const requestGame = async (player: 'red' | 'black') => {
 		const response = await fetch(
-			`http://${env.PUBLIC_SERVER_URL}:${env.PUBLIC_SERVER_PORT}/api/ongoing`,
+			`${constructApiUrl()}/api/ongoing`,
 			{
 				method: 'POST',
 				headers: {
