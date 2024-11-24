@@ -12,7 +12,8 @@ export enum MessageType {
 	ARRIVAL_RESPONSE = 8,
 	RESET = 9,
 	FORFEIT = 10,
-	PLAYERS_UPDATE = 11
+	PLAYERS_UPDATE = 11,
+  PING_PONG = 12,
 }
 
 export interface BaseMessage {
@@ -80,6 +81,10 @@ export interface PlayerDataMessage extends BaseMessage {
 export interface ForfeitRequest extends BaseMessage {
 	type: MessageType.FORFEIT;
 	requestor: PlayerPosition;
+}
+
+export interface PingPongMessage extends BaseMessage {
+  type: MessageType.PING_PONG
 }
 
 export interface Location {

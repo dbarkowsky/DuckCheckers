@@ -1,7 +1,7 @@
 import app from "./express";
 import ws from 'ws';
 import http from 'http';
-import { BaseMessage, CommunicationMessage, MessageType, PlayerDataMessage, PlayerPosition } from './interfaces/messages.ts'
+import { BaseMessage, CommunicationMessage, MessageType, PingPongMessage, PlayerDataMessage, PlayerPosition } from './interfaces/messages.ts'
 import db from "./db/conn";
 import { ObjectId } from "mongodb";
 import { IOngoingGame } from "./interfaces/IOngoingGame";
@@ -92,6 +92,12 @@ wsServer.on('connection', (socket: DuckSocket, request: http.IncomingMessage) =>
           break;
         case MessageType.FORFEIT:
           await forfeit({gameId, socket, existingGame, message});
+          break;
+        case MessageType.PING_PONG:
+          socket.send(JSON.stringify({
+            type: MessageType.PING_PONG,
+            gameId,
+          } as PingPongMessage))
           break;
         default:
           break;

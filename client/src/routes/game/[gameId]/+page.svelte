@@ -10,7 +10,8 @@
 		type ArrivalMessage,
 		type ArrivalResponse,
 		type CommunicationMessage,
-		type PlayerDataMessage
+		type PlayerDataMessage,
+		type PingPongMessage
 	} from '$lib/messages';
 	import localStore, { PlayerPosition } from '../../../stores/localStore';
 	import { page } from '$app/stores';
@@ -41,9 +42,7 @@
 	});
 	onMount(() => {
 		localStore.setPlayerName(window.localStorage.getItem('playerName'));
-		socket = new WebSocket(
-			`${constructApiUrl(true)}/${data.gameId}`
-		) as DuckSocket;
+		socket = new WebSocket(`${constructApiUrl(true)}/${data.gameId}`) as DuckSocket;
 		socket.addEventListener('open', () => {
 			// Announce arrival and request the current game state
 			socket.send(
@@ -53,6 +52,14 @@
 					playerName: $localStore.playerName
 				} as ArrivalMessage)
 			);
+			setInterval(() => {
+				socket.send(
+					JSON.stringify({
+						type: MessageType.PING_PONG
+					} as PingPongMessage)
+				);
+				console.log('ping');
+			}, 10000);
 		});
 		socket.addEventListener('message', (e) => {
 			const message = JSON.parse(e.data) as BaseMessage;
@@ -60,6 +67,9 @@
 			if (message.gameId === data.gameId) {
 				switch (message.type) {
 					case MessageType.COMMUNICATION:
+						break;
+					case MessageType.PING_PONG:
+						console.log('pong');
 						break;
 					case MessageType.GAME_STATE:
 						const gameData = message as GameStateMessage;
@@ -232,7 +242,7 @@
 		justify-content: space-between;
 	}
 
-		button {
+	button {
 		padding: 5px 10px;
 		font-weight: bold;
 		font-family: Geneva, Tahoma, sans-serif;

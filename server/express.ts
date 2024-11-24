@@ -23,7 +23,7 @@ const limiter = rateLimit({
 const corsOptions = {
   origin: [
     FRONTEND_URL ?? '',
-    'http://localhost:5173', // Frontend or local
+    'localhost:5173', // Frontend or local
   ],
   credentials: true,
 };
