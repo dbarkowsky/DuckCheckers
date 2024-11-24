@@ -52,6 +52,7 @@
 					playerName: $localStore.playerName
 				} as ArrivalMessage)
 			);
+      // PingPong keeps the socket alive
 			setInterval(() => {
 				socket.send(
 					JSON.stringify({
