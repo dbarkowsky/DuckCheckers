@@ -26,3 +26,11 @@ I started this project when Bun wasn't available for Windows. In order to get ar
 4. Connect to the container using VS Code and the Attach to Running Container option.
 5. Start the API from `/server` with `bun run i`, then `bun run dev`.
 6. Start the frontend from `/client` with `bun run i`, then `bun run dev --host`.
+
+## Screenshots
+### Home Page
+![image](https://github.com/user-attachments/assets/eee5594f-3edf-47d2-9c4b-6a32cea7fff1)
+
+### Game Page
+![image](https://github.com/user-attachments/assets/e4ccb890-6aba-4230-9734-b2aea287dad9)
+
